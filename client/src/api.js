@@ -30,14 +30,22 @@ async function appel(methode, url, corps) {
     body = JSON.stringify(corps);
   }
 
-  const res = await fetch(url, { method: methode, headers, body });
+  const INJOIGNABLE = 'Le serveur ne répond pas. Vérifiez que « npm run dev:serveur » tourne sans erreur.';
+  let res;
+  try {
+    res = await fetch(url, { method: methode, headers, body });
+  } catch {
+    throw new ErreurApi(INJOIGNABLE, 0);
+  }
   if (res.status === 204) return null;
-  const data = await res.json().catch(() => ({}));
+  const data = await res.json().catch(() => null);
   if (!res.ok) {
     if (res.status === 401 && url.startsWith('/api/admin')) {
       jeton.ecrire(null);
       window.dispatchEvent(new Event('ovolina:deconnexion'));
     }
+    // Pas de réponse JSON = ce n'est pas notre serveur qui a répondu (il est arrêté ou a planté)
+    if (!data) throw new ErreurApi(INJOIGNABLE, res.status);
     throw new ErreurApi(data.error || 'Une erreur est survenue', res.status, data.erreurs);
   }
   return data;

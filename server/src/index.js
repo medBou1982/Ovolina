@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import publicRoutes from './routes/public.js';
 import adminRoutes from './routes/admin.js';
 import { UPLOAD_DIR } from './utils.js';
+import { pool } from './db.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CLIENT_DIST = path.resolve(__dirname, '..', '..', 'client', 'dist');
@@ -38,4 +39,14 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Ovolina : serveur démarré sur http://localhost:${PORT}`));
+app.listen(PORT, async () => {
+  console.log(`Ovolina : serveur démarré sur http://localhost:${PORT}`);
+  // Vérifie tout de suite la base pour afficher un message clair en cas de problème
+  try {
+    await pool.query('SELECT 1 FROM admins LIMIT 1');
+    console.log('Base PostgreSQL : connectée.');
+  } catch (e) {
+    if (e.code === '42P01') console.error('Base PostgreSQL : tables absentes. Lancez « npm run db:init ».');
+    else console.error(`Base PostgreSQL : connexion impossible (${e.message}). Vérifiez DATABASE_URL dans server/.env.`);
+  }
+});
