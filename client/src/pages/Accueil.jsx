@@ -1,0 +1,120 @@
+import { Link } from 'react-router-dom';
+import { useCharger } from '../useCharger.js';
+import { Vague, EnteteSection, ProduitCarte, RecetteCarte, Traits, Icone } from '../components/Elements.jsx';
+import { SITE } from '../site.js';
+
+const ENGAGEMENTS = [
+  { titre: 'Qualité & sécurité', texte: 'Normes sanitaires et certifications respectées.', icone: <><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" /><path d="M9 12l2 2 4-4" /></> },
+  { titre: 'Traçabilité totale', texte: 'De la ferme à l’assiette, chaque œuf est suivi.', icone: <><circle cx="6" cy="6" r="2.5" /><circle cx="18" cy="18" r="2.5" /><path d="M8.5 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6.5" /></> },
+  { titre: 'Agriculture durable', texte: 'Pratiques responsables, empreinte carbone réduite.', icone: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" /></> },
+  { titre: 'Partenariat durable', texte: 'Une relation de confiance avec nos clients.', icone: <path d="M3 12l4-4 5 3 5-3 4 4-9 8z" /> }
+];
+
+export default function Accueil() {
+  const produits = useCharger('/api/produits');
+  const recettes = useCharger('/api/recettes?limit=3');
+
+  return (
+    <>
+      <section className="heros" style={{ backgroundImage: 'url(/images/heros.jpg)' }}>
+        <Vague position="haut" />
+        <div className="heros-contenu">
+          <span className="script">Bien sûr Bnina !</span>
+          <h1>Des œufs frais pour vous, chaque jour !</h1>
+          <p>De nos élevages à votre table : qualité, fraîcheur et traçabilité totale.</p>
+          <Link to="/produits" className="btn btn-jaune" style={{ marginTop: 12 }}>Découvrir nos produits</Link>
+        </div>
+        <Vague position="bas" />
+      </section>
+
+      <section className="section" id="apropos">
+        <div className="conteneur">
+          <EnteteSection script="Bienvenue chez Ovolina" titre="Des œufs de qualité, de la ferme à votre table" />
+          <div className="deux-colonnes">
+            <div className="forme-organique">
+              <div className="soleil" />
+              <Traits style={{ position: 'absolute', top: 0, left: 0 }} />
+              <div className="photo" style={{ backgroundImage: 'url(/images/apropos.jpg)' }} role="img" aria-label="Élevage Ovolina" />
+            </div>
+            <div className="texte-bloc">
+              <p>Ovolina est une holding agro-industrielle engagée dans la production et l’emballage d’œufs de poule. Notre chaîne de valeur intégrée place la qualité, la traçabilité et la durabilité au cœur de notre métier.</p>
+              <div className="carte-ombre">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C8221A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 19c0-8 6-14 15-14 0 9-6 15-14 15" /><path d="M5 19l7-7" /></svg>
+                <div><strong>Élevages contrôlés</strong>Des poules élevées dans le respect du bien-être animal.</div>
+              </div>
+              <div className="carte-ombre">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C8221A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3" y="7" width="13" height="10" rx="1" /><path d="M16 10h3l2 3v4h-5" /><circle cx="7" cy="18" r="1.8" /><circle cx="18" cy="18" r="1.8" /></svg>
+                <div><strong>Livraison rapide et fiable</strong>Un réseau logistique optimisé pour garantir la fraîcheur.</div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 8 }}>
+                <span className="pastille-icone">{Icone.telephone()}</span>
+                <div>
+                  <span className="script" style={{ display: 'block', fontSize: 24, color: 'var(--texte)' }}>Une commande ? Appelez-nous</span>
+                  <a href={`tel:${SITE.telephoneLien}`} style={{ fontFamily: 'var(--titre)', fontWeight: 700, fontSize: 22, textDecoration: 'none' }}>{SITE.telephone}</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-grise">
+        <div className="conteneur" style={{ paddingTop: 72, paddingBottom: 72 }}>
+          <div className="engagements">
+            {ENGAGEMENTS.map((e) => (
+              <div key={e.titre}>
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#006838" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{e.icone}</svg>
+                <strong>{e.titre}</strong>
+                <span>{e.texte}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="conteneur">
+          <EnteteSection script="Notre gamme" titre="Nos produits" />
+          {produits.chargement && <p className="chargement">Chargement…</p>}
+          {produits.donnees && (
+            <div className="grille-produits">
+              {produits.donnees.map((p) => <ProduitCarte key={p.id} produit={p} />)}
+            </div>
+          )}
+          <div className="centre" style={{ marginTop: 48 }}>
+            <Link to="/produits" className="btn btn-jaune">Toute la gamme</Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="bandeau">
+        <Vague position="haut" variante={1} />
+        <div className="conteneur">
+          <div className="chiffres">
+            <div className="chiffre"><strong>3</strong><span>sites</span></div>
+            <div className="chiffre"><strong>{produits.donnees?.length || 4}</strong><span>gammes</span></div>
+          </div>
+          <div style={{ flex: '1 1 360px', display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
+            <h2>Grande distribution, restauration, industrie : nous livrons les professionnels partout en Tunisie.</h2>
+            <Link to="/contact" className="btn btn-jaune">Nous contacter</Link>
+          </div>
+        </div>
+        <Vague position="bas" variante={1} />
+      </section>
+
+      {recettes.donnees?.length > 0 && (
+        <section className="section">
+          <div className="conteneur">
+            <EnteteSection script="Inspirations culinaires" titre="Nos recettes favorites" />
+            <div className="grille-recettes">
+              {recettes.donnees.map((r) => <RecetteCarte key={r.id} recette={r} />)}
+            </div>
+            <div className="centre" style={{ marginTop: 48 }}>
+              <Link to="/recettes" className="btn btn-jaune">Toutes les recettes</Link>
+            </div>
+          </div>
+        </section>
+      )}
+    </>
+  );
+}

@@ -1,0 +1,8 @@
+Déposez ici les photos fixes du site (format JPG, environ 1920 px de large) :
+
+  heros.jpg      → grande photo de la page d'accueil (élevage, poules en plein air)
+  banniere.jpg   → bandeau vert en haut des pages Produits, Recettes, Contact…
+  apropos.jpg    → photo ronde de la section « Bienvenue chez Ovolina »
+
+Tant qu'une photo manque, le site affiche le vert Ovolina à la place : rien ne casse.
+Les photos des produits et des recettes, elles, s'ajoutent depuis l'administration.

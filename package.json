@@ -1,0 +1,14 @@
+{
+  "name": "ovolina",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site Ovolina : React + Node.js + PostgreSQL",
+  "scripts": {
+    "installer": "npm --prefix server install && npm --prefix client install",
+    "db:init": "npm --prefix server run db:init",
+    "dev:serveur": "npm --prefix server run dev",
+    "dev:site": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start"
+  }
+}
