@@ -33,7 +33,7 @@ export function Revele({ children, sens = '', delai = 0, as: Balise = 'div', cla
 }
 
 // Nombre qui défile de 0 à sa valeur quand il apparaît
-export function Compteur({ valeur, duree = 1400 }) {
+export function Compteur({ valeur, suffixe = '', duree = 1600 }) {
   const ref = useRef(null);
   const [n, setN] = useState(0);
 
@@ -57,7 +57,12 @@ export function Compteur({ valeur, duree = 1400 }) {
     return () => { obs.disconnect(); cancelAnimationFrame(raf); };
   }, [valeur, duree]);
 
-  return <strong ref={ref} aria-label={String(valeur)}>{n}</strong>;
+  return (
+    <strong ref={ref} className="nombre">
+      <span aria-hidden="true">{n.toLocaleString('fr-FR')}{suffixe}</span>
+      <span className="sr-only">{valeur}{suffixe}</span>
+    </strong>
+  );
 }
 
 function PetitOeuf({ jaune = '#F8C800', taille = 40 }) {
@@ -162,5 +167,18 @@ export function HautDePage() {
     >
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 14l6-6 6 6" /></svg>
     </button>
+  );
+}
+
+// L'oiseau du logo Ovolina, redessiné en vectoriel pour servir de motif
+export function Oiseau({ className, style }) {
+  return (
+    <svg className={className} style={style} viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="62" cy="68" r="34" fill="none" stroke="currentColor" strokeWidth="14" strokeLinecap="round" strokeDasharray="168 46" transform="rotate(-96 62 68)" />
+      <path d="M44 36 C 30 26, 14 30, 6 42 C 20 48, 34 46, 44 36 Z" fill="currentColor" />
+      <path d="M42 52 C 28 46, 14 52, 8 64 C 22 68, 36 64, 42 52 Z" fill="currentColor" />
+      <circle cx="72" cy="50" r="5" fill="#E0453A" />
+      <path d="M93 46 L 113 51 L 94 58 Z" fill="#E0453A" />
+    </svg>
   );
 }

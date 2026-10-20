@@ -7,5 +7,12 @@ export const SITE = {
     { ville: 'Sfax', adresse: 'Route de Gabès Km 20, Nakta 3060 Mahres' },
     { ville: 'Grombalia', adresse: 'Zone Artisanale 8030 Grombalia' },
     { ville: 'Djerba', adresse: 'El Groo, Ajim 4166 Djerba' }
+  ],
+  // Chiffres affichés sur la page d'accueil
+  chiffres: [
+    { valeur: 20, suffixe: '+', label: 'Gouvernorats' },
+    { valeur: 150, suffixe: '+', label: 'Grandes surfaces' },
+    { valeur: 900, suffixe: '+', label: 'Supérettes' },
+    { valeur: 130, suffixe: '+', label: 'Commerciaux', detail: 'à votre service' }
   ]
 };

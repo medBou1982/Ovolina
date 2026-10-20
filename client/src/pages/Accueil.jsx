@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useCharger } from '../useCharger.js';
 import { Vague, EnteteSection, ProduitCarte, RecetteCarte, Traits, Icone } from '../components/Elements.jsx';
-import { Revele, Compteur, OeufsFlottants, Souligne, BadgeTournant, BandeDefilante, Semis } from '../components/Decor.jsx';
+import { Revele, Compteur, OeufsFlottants, Souligne, BadgeTournant, BandeDefilante, Semis, Oiseau } from '../components/Decor.jsx';
 import { SITE } from '../site.js';
 
 const ENGAGEMENTS = [
@@ -111,17 +111,30 @@ export default function Accueil() {
         </div>
       </section>
 
-      <section className="bandeau">
+      <section className="bandeau bandeau-chiffres">
         <Vague position="haut" variante={1} />
         <div className="conteneur">
-          <div className="chiffres">
-            <Revele sens="zoom"><div className="chiffre"><Compteur valeur={3} /><span>sites</span></div></Revele>
-            <Revele sens="zoom" delai={150}><div className="chiffre" style={{ animationDelay: '-4s' }}><Compteur valeur={produits.donnees?.length || 4} /><span>gammes</span></div></Revele>
+          <div className="entete-chiffres">
+            <Revele sens="gauche">
+              <span className="script">Ovolina en chiffres</span>
+              <h2>Présents partout en Tunisie, de la grande distribution à la supérette de quartier.</h2>
+            </Revele>
+            <Revele sens="droite">
+              <Link to="/contact" className="btn btn-jaune">Devenir revendeur</Link>
+            </Revele>
           </div>
-          <Revele sens="droite" style={{ flex: '1 1 360px', display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
-            <h2>Grande distribution, restauration, industrie : nous livrons les professionnels partout en Tunisie.</h2>
-            <Link to="/contact" className="btn btn-jaune">Nous contacter</Link>
-          </Revele>
+          <div className="stats">
+            {SITE.chiffres.map((c, i) => (
+              <Revele key={c.label} sens="zoom" delai={i * 130}>
+                <div className="stat">
+                  <Compteur valeur={c.valeur} suffixe={c.suffixe} />
+                  <span className="label">{c.label}</span>
+                  {c.detail && <span className="detail">{c.detail}</span>}
+                  <Oiseau className="oiseau" />
+                </div>
+              </Revele>
+            ))}
+          </div>
         </div>
         <Vague position="bas" variante={1} />
       </section>
