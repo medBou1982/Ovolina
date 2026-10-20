@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useCharger } from '../useCharger.js';
 import { Revele } from '../components/Decor.jsx';
-import { Banniere, Vague, VisuelProduit } from '../components/Elements.jsx';
+import { Banniere, Vague, VisuelProduit, Quantites } from '../components/Elements.jsx';
 
 export default function Produits() {
   const { donnees, chargement, erreur } = useCharger('/api/produits');
@@ -32,6 +32,7 @@ export default function Produits() {
                   <div>
                     <h3>{p.nom}</h3>
                     <p>{p.resume}</p>
+                    <Quantites variantes={p.variantes} />
                     <Link to={`/produits/${p.slug}`} className="btn btn-jaune">Voir le produit</Link>
                   </div>
                 </Revele>

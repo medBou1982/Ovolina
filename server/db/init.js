@@ -4,6 +4,7 @@ import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import { pool, query } from '../src/db.js';
 import { preparerBase } from '../src/infosSite.js';
+import { migrerFormats } from '../src/variantes.js';
 
 
 const PRODUITS = [
@@ -100,6 +101,7 @@ async function main() {
         [r.titre, r.slug, r.categorie, r.resume, r.temps, r.personnes, r.difficulte, r.ingredients, r.etapes, ids[r.produit], i + 1]
       );
     }
+    await migrerFormats(); // « Plateau de 30 » devient un conditionnement
     console.log(`   ${PRODUITS.length} produits et ${RECETTES.length} recettes ajoutés.`);
   }
 

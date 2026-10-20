@@ -2,7 +2,8 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { query } from '../db.js';
 import { requireAuth, signToken } from '../auth.js';
-import { upload, imageUrl } from '../upload.js';
+import { upload, uploadPlusieurs, imageUrl } from '../upload.js';
+import { avecVariantes, validerVariantes, enregistrerVariantes } from '../variantes.js';
 import { wrap, uniqueSlug, toBool, toInt, removeUpload } from '../utils.js';
 import { lireSite, validerSite, ecrireSite } from '../infosSite.js';
 
@@ -50,7 +51,6 @@ function produitFields(body) {
     resume: String(body.resume || '').trim(),
     description: String(body.description || '').trim(),
     points_forts: String(body.points_forts || '').trim(),
-    formats: String(body.formats || '').trim(),
     nutrition: String(body.nutrition || '').trim(),
     couleur_jaune: /^#[0-9a-fA-F]{6}$/.test(body.couleur_jaune || '') ? body.couleur_jaune : '#F2A20C',
     actif: toBool(body.actif),
@@ -58,66 +58,89 @@ function produitFields(body) {
   };
 }
 
+const fichiersDe = (req) => req.files || [];
+const imageProduit = (req) => fichiersDe(req).find((f) => f.fieldname === 'image');
+async function nettoyerEnvois(req) {
+  for (const f of fichiersDe(req)) await removeUpload(imageUrl(f));
+}
+
+// Enveloppe une route d'envoi de photos : en cas d'erreur, les fichiers reçus sont supprimés
+const avecEnvois = (fn) => wrap(async (req, res, next) => {
+  try {
+    await fn(req, res, next);
+  } catch (e) {
+    await nettoyerEnvois(req);
+    throw e;
+  }
+});
+
 router.get('/admin/produits', wrap(async (req, res) => {
   const { rows } = await query(
     `SELECT p.*, (SELECT COUNT(*)::int FROM recettes r WHERE r.produit_id = p.id) AS nb_recettes
      FROM produits p ORDER BY p.ordre, p.nom`
   );
-  res.json(rows);
+  res.json(await avecVariantes(rows, false));
 }));
 
 router.get('/admin/produits/:id', wrap(async (req, res) => {
   const { rows } = await query('SELECT * FROM produits WHERE id = $1', [toInt(req.params.id)]);
   if (!rows[0]) return res.status(404).json({ error: 'Produit introuvable' });
-  res.json(rows[0]);
+  res.json((await avecVariantes(rows, false))[0]);
 }));
 
-router.post('/admin/produits', upload.single('image'), wrap(async (req, res) => {
+router.post('/admin/produits', uploadPlusieurs, avecEnvois(async (req, res) => {
   const f = produitFields(req.body);
-  if (!f.nom) {
-    await removeUpload(imageUrl(req.file));
-    return res.status(400).json({ error: 'Le nom est obligatoire' });
+  const { liste, erreur } = validerVariantes(req.body.variantes);
+  if (!f.nom || erreur) {
+    await nettoyerEnvois(req);
+    return res.status(400).json({ error: erreur || 'Le nom est obligatoire' });
   }
   const slug = await uniqueSlug(query, 'produits', req.body.slug || f.nom);
   const { rows } = await query(
-    `INSERT INTO produits (nom, slug, resume, description, points_forts, formats, nutrition, couleur_jaune, image, actif, ordre)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
-    [f.nom, slug, f.resume, f.description, f.points_forts, f.formats, f.nutrition, f.couleur_jaune, imageUrl(req.file), f.actif, f.ordre]
+    `INSERT INTO produits (nom, slug, resume, description, points_forts, nutrition, couleur_jaune, image, actif, ordre)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+    [f.nom, slug, f.resume, f.description, f.points_forts, f.nutrition, f.couleur_jaune, imageUrl(imageProduit(req)), f.actif, f.ordre]
   );
-  res.status(201).json(rows[0]);
+  await enregistrerVariantes(rows[0].id, liste, fichiersDe(req));
+  res.status(201).json((await avecVariantes(rows, false))[0]);
 }));
 
-router.put('/admin/produits/:id', upload.single('image'), wrap(async (req, res) => {
+router.put('/admin/produits/:id', uploadPlusieurs, avecEnvois(async (req, res) => {
   const id = toInt(req.params.id);
   const { rows: old } = await query('SELECT * FROM produits WHERE id = $1', [id]);
   if (!old[0]) {
-    await removeUpload(imageUrl(req.file));
+    await nettoyerEnvois(req);
     return res.status(404).json({ error: 'Produit introuvable' });
   }
   const f = produitFields(req.body);
-  if (!f.nom) {
-    await removeUpload(imageUrl(req.file));
-    return res.status(400).json({ error: 'Le nom est obligatoire' });
+  const { liste, erreur } = validerVariantes(req.body.variantes);
+  if (!f.nom || erreur) {
+    await nettoyerEnvois(req);
+    return res.status(400).json({ error: erreur || 'Le nom est obligatoire' });
   }
   const slug = await uniqueSlug(query, 'produits', req.body.slug || f.nom, id);
   let image = old[0].image;
-  if (req.file) image = imageUrl(req.file);
+  if (imageProduit(req)) image = imageUrl(imageProduit(req));
   else if (toBool(req.body.supprimer_image, false)) image = null;
 
   const { rows } = await query(
-    `UPDATE produits SET nom=$1, slug=$2, resume=$3, description=$4, points_forts=$5, formats=$6, nutrition=$7,
-       couleur_jaune=$8, image=$9, actif=$10, ordre=$11, modifie_le=NOW()
-     WHERE id=$12 RETURNING *`,
-    [f.nom, slug, f.resume, f.description, f.points_forts, f.formats, f.nutrition, f.couleur_jaune, image, f.actif, f.ordre, id]
+    `UPDATE produits SET nom=$1, slug=$2, resume=$3, description=$4, points_forts=$5, nutrition=$6,
+       couleur_jaune=$7, image=$8, actif=$9, ordre=$10, modifie_le=NOW()
+     WHERE id=$11 RETURNING *`,
+    [f.nom, slug, f.resume, f.description, f.points_forts, f.nutrition, f.couleur_jaune, image, f.actif, f.ordre, id]
   );
+  await enregistrerVariantes(id, liste, fichiersDe(req));
   if (image !== old[0].image) await removeUpload(old[0].image);
-  res.json(rows[0]);
+  res.json((await avecVariantes(rows, false))[0]);
 }));
 
 router.delete('/admin/produits/:id', wrap(async (req, res) => {
-  const { rows } = await query('DELETE FROM produits WHERE id = $1 RETURNING image', [toInt(req.params.id)]);
+  const id = toInt(req.params.id);
+  const { rows: imgs } = await query('SELECT image FROM variantes WHERE produit_id = $1 AND image IS NOT NULL', [id]);
+  const { rows } = await query('DELETE FROM produits WHERE id = $1 RETURNING image', [id]);
   if (!rows[0]) return res.status(404).json({ error: 'Produit introuvable' });
   await removeUpload(rows[0].image);
+  for (const v of imgs) await removeUpload(v.image);
   res.status(204).end();
 }));
 

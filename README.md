@@ -13,6 +13,7 @@ Site vitrine Ovolina avec une interface d'administration simple.
 **Administration** (`/admin`) :
 - Connexion par email + mot de passe
 - Produits : ajouter, modifier, masquer, supprimer, photo, ordre d'affichage
+- Conditionnements de chaque produit (boîte de 6, de 12, plateau de 30…) : nombre d'œufs, référence, photo, visibilité
 - Recettes : idem, avec catégorie, ingrédients, étapes et produit utilisé
 - Messages : lecture, « traité / nouveau », réponse par email, suppression
 - Infos du site : email, téléphone, réseaux sociaux, adresses des sites, chiffres clés de l'accueil

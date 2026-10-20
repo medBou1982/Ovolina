@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useCharger } from '../useCharger.js';
 import { lignes } from '../api.js';
 import { Revele } from '../components/Decor.jsx';
-import { Banniere, Coche, Traits, VisuelProduit, RecetteCarte, EnteteSection } from '../components/Elements.jsx';
+import { Banniere, Coche, Traits, VisuelProduit, RecetteCarte, EnteteSection, Emballage, Quantites } from '../components/Elements.jsx';
 import Introuvable from './Introuvable.jsx';
 
 export default function Produit() {
@@ -19,7 +19,6 @@ export default function Produit() {
   if (chargement) return <p className="chargement">Chargement…</p>;
   if (!p) return <p className="vide">Impossible de charger ce produit.</p>;
 
-  const formats = String(p.formats || '').split(',').map((f) => f.trim()).filter(Boolean);
   const nutrition = lignes(p.nutrition).map((l) => {
     const i = l.indexOf(':');
     return i > 0 ? [l.slice(0, i).trim(), l.slice(i + 1).trim()] : [l, ''];
@@ -40,16 +39,42 @@ export default function Produit() {
             <h2>{p.nom}</h2>
             <p>{p.description || p.resume}</p>
             {lignes(p.points_forts).map((pt) => <Coche key={pt}>{pt}</Coche>)}
-            {formats.length > 0 && (
+            {p.variantes?.length > 0 && (
               <div className="formats">
-                <strong style={{ color: 'var(--vert)', marginRight: 6 }}>Formats :</strong>
-                {formats.map((f) => <span key={f}>{f}</span>)}
+                <strong style={{ color: 'var(--vert)', marginRight: 6 }}>Disponible par :</strong>
+                <Quantites variantes={p.variantes} />
               </div>
             )}
-            <Link to="/contact" className="btn btn-jaune" style={{ marginTop: 6 }}>Où trouver ce produit</Link>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 6 }}>
+              {p.variantes?.length > 0 && <a href="#conditionnements" className="btn btn-contour">Voir les conditionnements</a>}
+              <Link to="/contact" className="btn btn-jaune">Où trouver ce produit</Link>
+            </div>
           </Revele>
         </div>
       </section>
+
+      {p.variantes?.length > 0 && (
+        <section className="section section-grise" id="conditionnements">
+          <div className="conteneur">
+            <Revele><EnteteSection script="Choisissez votre format" titre="Nos conditionnements" /></Revele>
+            <div className="grille-variantes">
+              {p.variantes.map((v, i) => (
+                <Revele key={v.id} sens="zoom" delai={i * 110}>
+                  <article className="variante">
+                    <div className="variante-visuel">
+                      {v.image ? <img src={v.image} alt={`${p.nom}, ${v.libelle.toLowerCase()} de ${v.quantite} œufs`} loading="lazy" /> : <Emballage quantite={v.quantite} libelle={v.libelle} />}
+                      <span className="variante-pastille" aria-hidden="true">{v.quantite}</span>
+                    </div>
+                    <h3>{v.libelle} de {v.quantite}</h3>
+                    <span className="variante-detail">{v.quantite} œufs {p.nom}</span>
+                    {v.reference && <span className="variante-ref">Réf. {v.reference}</span>}
+                  </article>
+                </Revele>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="bande-jaune">
         <div className="grille">

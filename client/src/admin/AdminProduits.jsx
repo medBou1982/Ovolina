@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api.js';
 import { useCharger } from '../useCharger.js';
-import { Oeuf } from '../components/Elements.jsx';
+import { Oeuf, Quantites } from '../components/Elements.jsx';
 
 export default function AdminProduits() {
   const { donnees, chargement, erreur, recharger } = useCharger('/api/admin/produits');
@@ -50,7 +50,7 @@ export default function AdminProduits() {
         <div className="tableau-admin-boite">
           <table className="tableau-admin">
             <thead>
-              <tr><th scope="col">Produit</th><th scope="col">Lien</th><th scope="col">Ordre</th><th scope="col">Statut</th><th scope="col" style={{ textAlign: 'right' }}>Actions</th></tr>
+              <tr><th scope="col">Produit</th><th scope="col">Conditionnements</th><th scope="col">Lien</th><th scope="col">Ordre</th><th scope="col">Statut</th><th scope="col" style={{ textAlign: 'right' }}>Actions</th></tr>
             </thead>
             <tbody>
               {liste.map((p) => (
@@ -61,6 +61,7 @@ export default function AdminProduits() {
                       <strong>{p.nom}</strong>
                     </span>
                   </td>
+                  <td>{p.variantes?.length ? <Quantites variantes={p.variantes} /> : <span style={{ color: 'var(--gris)' }}>—</span>}</td>
                   <td style={{ color: 'var(--gris)' }}>/produits/{p.slug}</td>
                   <td>{p.ordre}</td>
                   <td><span className={`pilule ${p.actif ? 'pilule-ok' : 'pilule-off'}`}>{p.actif ? 'Visible' : 'Masqué'}</span></td>
@@ -75,7 +76,7 @@ export default function AdminProduits() {
                 </tr>
               ))}
               {liste.length === 0 && (
-                <tr><td colSpan={5} className="vide">{recherche ? 'Aucun produit ne correspond.' : 'Aucun produit pour l’instant.'}</td></tr>
+                <tr><td colSpan={6} className="vide">{recherche ? 'Aucun produit ne correspond.' : 'Aucun produit pour l’instant.'}</td></tr>
               )}
             </tbody>
           </table>

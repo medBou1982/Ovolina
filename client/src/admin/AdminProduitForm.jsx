@@ -3,9 +3,10 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api.js';
 import { Oeuf } from '../components/Elements.jsx';
 import ChampImage from './ChampImage.jsx';
+import Conditionnements, { versLignes, ajouterAuFormulaire } from './Conditionnements.jsx';
 
 const VIDE = {
-  nom: '', slug: '', resume: '', description: '', points_forts: '', formats: '', nutrition: '',
+  nom: '', slug: '', resume: '', description: '', points_forts: '', nutrition: '',
   couleur_jaune: '#F2A20C', actif: true, ordre: 0, image: null
 };
 
@@ -15,6 +16,7 @@ export default function AdminProduitForm() {
   const navigate = useNavigate();
   const [form, setForm] = useState(VIDE);
   const [fichier, setFichier] = useState({ image: null, supprimer: false });
+  const [variantes, setVariantes] = useState([]);
   const [chargement, setChargement] = useState(!nouveau);
   const [envoi, setEnvoi] = useState(false);
   const [erreur, setErreur] = useState(null);
@@ -22,7 +24,7 @@ export default function AdminProduitForm() {
   useEffect(() => {
     if (nouveau) return;
     api.get(`/api/admin/produits/${id}`)
-      .then((p) => { setForm({ ...VIDE, ...p }); setChargement(false); })
+      .then((p) => { setForm({ ...VIDE, ...p }); setVariantes(versLignes(p.variantes)); setChargement(false); })
       .catch((err) => { setErreur(err.message); setChargement(false); });
   }, [id, nouveau]);
 
@@ -34,11 +36,12 @@ export default function AdminProduitForm() {
     setEnvoi(true);
     setErreur(null);
     const fd = new FormData();
-    ['nom', 'slug', 'resume', 'description', 'points_forts', 'formats', 'nutrition', 'couleur_jaune', 'ordre']
+    ['nom', 'slug', 'resume', 'description', 'points_forts', 'nutrition', 'couleur_jaune', 'ordre']
       .forEach((k) => fd.append(k, form[k] ?? ''));
     fd.append('actif', form.actif ? 'true' : 'false');
     if (fichier.image) fd.append('image', fichier.image);
     if (fichier.supprimer) fd.append('supprimer_image', 'true');
+    ajouterAuFormulaire(fd, variantes);
     try {
       if (nouveau) await api.post('/api/admin/produits', fd);
       else await api.put(`/api/admin/produits/${id}`, fd);
@@ -78,7 +81,6 @@ export default function AdminProduitForm() {
           <label className="champ">Résumé (cartes et listes)<input type="text" maxLength={160} {...champ('resume')} /></label>
           <label className="champ">Description<textarea rows={4} {...champ('description')} /></label>
           <label className="champ">Points forts<textarea rows={3} {...champ('points_forts')} /><span className="aide">Un point par ligne.</span></label>
-          <label className="champ">Formats<input type="text" placeholder="Plateau de 30, Boîte de 6" {...champ('formats')} /><span className="aide">Séparés par des virgules.</span></label>
           <label className="champ">Valeurs nutritionnelles (pour 100 g)
             <textarea rows={4} placeholder={'Énergie : 140 kcal\nProtéines : 12,5 g'} {...champ('nutrition')} />
             <span className="aide">Une valeur par ligne, au format « Libellé : valeur ». Laissez vide pour masquer le tableau.</span>
@@ -105,6 +107,10 @@ export default function AdminProduitForm() {
             <label className="champ">Ordre d’affichage<input type="number" min={0} style={{ width: 110 }} {...champ('ordre')} /></label>
           </div>
           {!nouveau && <button type="button" className="btn btn-danger" style={{ alignSelf: 'flex-start' }} onClick={supprimer}>Supprimer ce produit</button>}
+        </div>
+
+        <div style={{ flex: '1 1 100%', minWidth: 0 }}>
+          <Conditionnements lignes={variantes} onChange={setVariantes} />
         </div>
 
         <div className="pied-form">

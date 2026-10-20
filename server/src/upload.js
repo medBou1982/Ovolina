@@ -25,3 +25,13 @@ export const upload = multer({
 });
 
 export const imageUrl = (file) => (file ? `/uploads/${path.basename(file.path)}` : null);
+
+// Formulaire produit : image du produit + une image par conditionnement (champs nommés librement)
+export const uploadPlusieurs = multer({
+  storage,
+  limits: { fileSize: 3 * 1024 * 1024, files: 25 },
+  fileFilter: (req, file, cb) => {
+    if (TYPES[file.mimetype]) cb(null, true);
+    else cb(Object.assign(new Error('Image JPG, PNG ou WebP uniquement'), { status: 400 }));
+  }
+}).any();

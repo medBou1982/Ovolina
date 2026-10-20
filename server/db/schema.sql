@@ -80,3 +80,16 @@ CREATE TABLE IF NOT EXISTS chiffres (
   detail TEXT NOT NULL DEFAULT '',
   ordre INT NOT NULL DEFAULT 0
 );
+
+-- Conditionnements d'un produit (boîte de 6, plateau de 30…)
+CREATE TABLE IF NOT EXISTS variantes (
+  id SERIAL PRIMARY KEY,
+  produit_id INT NOT NULL REFERENCES produits(id) ON DELETE CASCADE,
+  libelle TEXT NOT NULL DEFAULT 'Boîte',   -- type d'emballage : Boîte, Plateau, Étui…
+  quantite INT NOT NULL,                   -- nombre d'œufs dans l'emballage
+  reference TEXT NOT NULL DEFAULT '',      -- code article ou EAN (facultatif)
+  image TEXT,
+  actif BOOLEAN NOT NULL DEFAULT TRUE,
+  ordre INT NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS variantes_produit_idx ON variantes(produit_id);

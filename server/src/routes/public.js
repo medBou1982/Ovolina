@@ -2,10 +2,11 @@ import { Router } from 'express';
 import { query } from '../db.js';
 import { wrap } from '../utils.js';
 import { lireSite } from '../infosSite.js';
+import { avecVariantes } from '../variantes.js';
 
 const router = Router();
 
-const PRODUIT_COLS = `id, nom, slug, resume, description, points_forts, formats, nutrition, couleur_jaune, image, ordre`;
+const PRODUIT_COLS = `id, nom, slug, resume, description, points_forts, nutrition, couleur_jaune, image, ordre`;
 const RECETTE_COLS = `r.id, r.titre, r.slug, r.categorie, r.resume, r.image, r.temps_preparation, r.personnes,
   r.difficulte, r.ingredients, r.etapes, r.produit_id`;
 
@@ -19,7 +20,7 @@ router.get('/produits', wrap(async (req, res) => {
   const { rows } = await query(
     `SELECT ${PRODUIT_COLS} FROM produits WHERE actif ORDER BY ordre, nom`
   );
-  res.json(rows);
+  res.json(await avecVariantes(rows, true));
 }));
 
 // Fiche produit + recettes associées
@@ -33,7 +34,8 @@ router.get('/produits/:slug', wrap(async (req, res) => {
     `SELECT ${RECETTE_COLS} FROM recettes r WHERE r.produit_id = $1 AND r.actif ORDER BY r.ordre, r.titre LIMIT 3`,
     [rows[0].id]
   );
-  res.json({ ...rows[0], recettes: recettes.rows });
+  const [produit] = await avecVariantes(rows, true);
+  res.json({ ...produit, recettes: recettes.rows });
 }));
 
 // Liste des recettes (filtre optionnel ?categorie=Plats, ?limit=3)

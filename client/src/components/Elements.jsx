@@ -67,6 +67,7 @@ export function ProduitCarte({ produit }) {
       <div className="produit-visuel"><VisuelProduit produit={produit} /></div>
       <strong>{produit.nom}</strong>
       <span>{produit.resume}</span>
+      <Quantites variantes={produit.variantes} />
     </Link>
   );
 }
@@ -127,3 +128,42 @@ export const Icone = {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M5 20V12M12 20V7M19 20V4" /></svg>
   )
 };
+
+// Illustration d'un emballage vu de dessus, avec autant d'œufs que la quantité (30 maximum dessinés)
+export function Emballage({ quantite = 6, libelle = 'Boîte' }) {
+  const n = Math.max(1, Math.min(quantite, 30));
+  const cols = n <= 6 ? Math.min(n, 3) : n <= 12 ? Math.ceil(n / 2) : 6;
+  const rangs = Math.ceil(n / cols);
+  const pas = 24, marge = 12;
+  const l = cols * pas + marge * 2, h = rangs * pas + marge * 2;
+  const plateau = /plateau/i.test(libelle);
+  const oeufs = [];
+  for (let i = 0; i < n; i++) {
+    const x = marge + (i % cols) * pas + pas / 2, y = marge + Math.floor(i / cols) * pas + pas / 2;
+    oeufs.push(
+      <g key={i}>
+        <circle cx={x} cy={y} r={pas / 2 - 1} fill={plateau ? '#E9D3AE' : '#DCC398'} />
+        <ellipse cx={x} cy={y - 1} rx={pas / 2 - 4} ry={pas / 2 - 3} fill="#FFFDF5" />
+        <ellipse cx={x - 3} cy={y - 4} rx="2.2" ry="3" fill="#fff" />
+      </g>
+    );
+  }
+  return (
+    <svg viewBox={`0 0 ${l} ${h}`} width={l * 1.5} height={h * 1.5} className="emballage" role="img" aria-label={`${libelle} de ${quantite} œufs`}>
+      <rect x="1" y="1" width={l - 2} height={h - 2} rx={plateau ? 10 : 6} fill={plateau ? '#F3E4C8' : '#E8D3AE'} stroke="#C9A877" strokeWidth="2" />
+      {oeufs}
+    </svg>
+  );
+}
+
+// Petites étiquettes « 6 · 12 · 30 œufs » sous un produit
+export function Quantites({ variantes }) {
+  if (!variantes?.length) return null;
+  const q = [...new Set(variantes.map((v) => v.quantite))].sort((a, b) => a - b);
+  return (
+    <span className="quantites" aria-label={`Disponible par ${q.join(', ')} œufs`}>
+      {q.map((n) => <span key={n}>{n}</span>)}
+      <em>œufs</em>
+    </span>
+  );
+}
