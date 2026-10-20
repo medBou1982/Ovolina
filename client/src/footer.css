@@ -1,0 +1,77 @@
+/* ===== Pied de page ===== */
+.pied2 { position: relative; margin-top: 40px; }
+
+/* Carte d'appel aux revendeurs, à cheval sur le blanc et le vert */
+.pied-appel { position: relative; z-index: 3; margin-bottom: -96px; }
+.appel-carte {
+  position: relative; overflow: hidden;
+  background: var(--jaune); border-radius: 32px 32px 32px 120px;
+  padding: 44px 56px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px;
+  box-shadow: 0 24px 60px rgba(0, 74, 39, .22);
+}
+.appel-texte { flex: 1 1 420px; display: flex; flex-direction: column; gap: 6px; position: relative; z-index: 1; }
+.appel-texte .script { color: var(--rouge); font-size: 30px; }
+.appel-texte h2 { color: var(--vert-fonce); font-size: clamp(28px, 3.4vw, 40px); font-weight: 800; }
+.appel-texte p { margin: 0; color: #3D3A12; font-size: 17px; max-width: 520px; }
+.appel-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; position: relative; z-index: 1; }
+.appel-tel { display: inline-flex; align-items: center; gap: 12px; font-family: var(--titre); font-weight: 800; font-size: 22px; color: var(--vert-fonce); text-decoration: none; }
+.appel-tel:hover { color: var(--vert); }
+.appel-tel .pied-icone { background: var(--vert-fonce); color: var(--jaune); width: 46px; height: 46px; }
+.btn-vert { background: var(--vert-fonce); color: #fff; }
+.btn-vert:hover { background: var(--vert); color: #fff; transform: translateY(-1px); }
+.appel-oiseau { position: absolute; right: -24px; top: -30px; width: 200px; height: 200px; color: var(--vert-fonce); opacity: .08; transform: rotate(-12deg); pointer-events: none; }
+@media (max-width: 700px) { .appel-carte { padding: 32px 24px; border-radius: 28px 28px 28px 70px; } }
+
+/* Corps vert */
+.pied-corps { background: var(--vert-fonce); color: #DCEBDF; padding-top: 96px; position: relative; }
+.pied-corps > .vague { position: absolute; top: -1px; left: 0; }
+.pied-grille { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.4fr; gap: 40px; padding-top: 72px; padding-bottom: 24px; }
+@media (max-width: 1000px) { .pied-grille { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .pied-grille { gap: 32px 20px; } .pied-marque, .pied-contact { grid-column: 1 / -1; } }
+
+.pied-marque { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; }
+.pied-logo { background: #fff; border-radius: 22px 22px 22px 6px; padding: 10px 16px; display: inline-flex; transition: transform .3s; }
+.pied-logo:hover { transform: rotate(-2deg) scale(1.03); }
+.pied-logo img { height: 64px; width: auto; }
+.pied-marque p { margin: 0; font-size: 15px; line-height: 1.7; max-width: 320px; }
+.pied-reseaux { display: flex; gap: 10px; }
+.pied-reseaux a { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.08); color: #fff; display: inline-flex; align-items: center; justify-content: center; transition: background .25s, color .25s, transform .25s; }
+.pied-reseaux a:hover { background: var(--jaune); color: var(--vert-fonce); transform: translateY(-3px); }
+
+.pied-colonne { display: flex; flex-direction: column; gap: 10px; font-size: 15px; }
+.pied-colonne h3 { color: #fff; font-size: 19px; font-weight: 700; margin-bottom: 6px; position: relative; padding-bottom: 12px; }
+.pied-colonne h3::after { content: ''; position: absolute; left: 0; bottom: 0; width: 34px; height: 4px; border-radius: 4px; background: var(--jaune); }
+.pied-colonne a { color: #DCEBDF; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: color .2s, transform .2s; align-self: flex-start; }
+.pied-colonne a:hover { color: var(--jaune); transform: translateX(4px); }
+.pied-colonne .puce { width: 8px; height: 10px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: var(--jaune); flex-shrink: 0; }
+.pied-colonne .tout { color: var(--jaune); font-weight: 700; margin-top: 4px; }
+
+.pied-icone { width: 34px; height: 34px; border-radius: 50%; background: rgba(248, 200, 0, .14); color: var(--jaune); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pied-contact a:hover { transform: none; }
+.pied-site { display: flex; gap: 10px; align-items: flex-start; }
+.pied-site strong { display: block; color: #fff; font-weight: 700; }
+.pied-site span:last-child { line-height: 1.5; padding-top: 6px; }
+
+/* Paysage illustré */
+.paysage { display: block; width: 100%; height: clamp(120px, 15vw, 220px); margin-top: 8px; }
+.rayons { transform-origin: 1180px 120px; animation: tourne 40s linear infinite; }
+.soleil-pied circle { transform-origin: 1180px 120px; animation: pulse 6s ease-in-out infinite; }
+.oiseaux { animation: survol 26s linear infinite; }
+.oiseaux .vol { animation: battement 1.1s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.oiseaux .vol-2 { animation-delay: .3s; }
+.oiseaux .vol-3 { animation-delay: .6s; }
+@keyframes survol { from { transform: translateX(-420px); } to { transform: translateX(1500px); } }
+@keyframes battement { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.45); } }
+.nid ellipse:nth-child(3) { transform-box: fill-box; transform-origin: 50% 100%; animation: dandine 3.5s ease-in-out infinite; }
+
+/* Barre du bas */
+.pied-bas { background: #003A1E; color: #B9D3C1; font-size: 14px; }
+.pied-bas .conteneur { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; padding-top: 18px; padding-bottom: 18px; }
+.pied-bas .script { color: var(--jaune); font-size: 24px; }
+.pied-bas a { color: #B9D3C1; text-decoration: none; }
+.pied-bas a:hover { color: var(--jaune); }
+@media (max-width: 560px) { .pied-bas .conteneur { flex-direction: column; text-align: center; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .oiseaux { transform: translateX(200px); }
+}

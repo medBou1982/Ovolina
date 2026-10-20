@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Vague } from './Elements.jsx';
 import { HautDePage } from './Decor.jsx';
-import { SITE } from '../site.js';
+import Pied from './Pied.jsx';
 
 function Entete() {
   const [ouvert, setOuvert] = useState(false);
@@ -47,39 +46,6 @@ function Entete() {
         </nav>
       </div>
     </header>
-  );
-}
-
-function Pied() {
-  return (
-    <footer className="pied">
-      <Vague couleur="#fff" position="haut" variante={1} />
-      <div className="conteneur">
-        <div className="grille">
-          <div className="colonne">
-            <Link to="/" className="logo"><img src="/logo.png" alt="Ovolina" width="165" height="72" /></Link>
-            <span>Des œufs frais, sains et traçables, produits avec soin à Sfax, Grombalia et Djerba.</span>
-          </div>
-          <div className="colonne">
-            <strong>Liens</strong>
-            <Link to="/produits">› Nos produits</Link>
-            <Link to="/recettes">› Nos recettes</Link>
-            <Link to="/#apropos">› À propos</Link>
-            <Link to="/contact">› Contact</Link>
-          </div>
-          <div className="colonne">
-            <strong>Nous joindre</strong>
-            <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
-            <a href={`tel:${SITE.telephoneLien}`}>{SITE.telephone}</a>
-            <span>{SITE.sites.map((s) => s.ville).join(' · ')}</span>
-          </div>
-        </div>
-        <div className="bas">
-          <span>© {new Date().getFullYear()} Ovolina. Tous droits réservés.</span>
-          <span>Bien sûr Bnina !</span>
-        </div>
-      </div>
-    </footer>
   );
 }
 

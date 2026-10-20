@@ -8,6 +8,13 @@ export const SITE = {
     { ville: 'Grombalia', adresse: 'Zone Artisanale 8030 Grombalia' },
     { ville: 'Djerba', adresse: 'El Groo, Ajim 4166 Djerba' }
   ],
+  // Réseaux sociaux : collez l'adresse complète de vos pages. Une icône n'apparaît que si son adresse est remplie.
+  reseaux: {
+    facebook: '',
+    instagram: '',
+    linkedin: '',
+    youtube: ''
+  },
   // Chiffres affichés sur la page d'accueil
   chiffres: [
     { valeur: 20, suffixe: '+', label: 'Gouvernorats' },
