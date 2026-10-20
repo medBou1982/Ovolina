@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useCharger } from '../useCharger.js';
 import { lignes } from '../api.js';
+import { Revele } from '../components/Decor.jsx';
 import { Banniere, Coche, Traits, VisuelProduit, RecetteCarte, EnteteSection } from '../components/Elements.jsx';
 import Introuvable from './Introuvable.jsx';
 
@@ -30,11 +31,11 @@ export default function Produit() {
 
       <section className="section">
         <div className="conteneur deux-colonnes" style={{ gap: 64 }}>
-          <div className="visuel-produit">
+          <Revele sens="gauche" className="visuel-produit">
             <Traits couleur="#C8221A" style={{ position: 'absolute', left: -10, bottom: 30 }} />
             <div className="principal"><VisuelProduit produit={p} taille={150} /></div>
-          </div>
-          <div className="texte-bloc">
+          </Revele>
+          <Revele sens="droite" className="texte-bloc">
             <span className="script">Œufs emballés</span>
             <h2>{p.nom}</h2>
             <p>{p.description || p.resume}</p>
@@ -46,20 +47,20 @@ export default function Produit() {
               </div>
             )}
             <Link to="/contact" className="btn btn-jaune" style={{ marginTop: 6 }}>Où trouver ce produit</Link>
-          </div>
+          </Revele>
         </div>
       </section>
 
       <section className="bande-jaune">
         <div className="grille">
-          <div>
+          <Revele>
             <h3>Comment commander</h3>
             <p>Particuliers : en grande surface. Professionnels : contactez-nous pour un devis adapté à vos volumes.</p>
-          </div>
-          <div>
+          </Revele>
+          <Revele delai={150}>
             <h3>Livraison</h3>
             <p>Un réseau logistique optimisé depuis nos sites de Sfax, Grombalia et Djerba.</p>
-          </div>
+          </Revele>
         </div>
       </section>
 
@@ -86,7 +87,7 @@ export default function Produit() {
           <div className="conteneur">
             <EnteteSection script="À vos fourneaux" titre="Recettes avec ce produit" />
             <div className="grille-recettes">
-              {p.recettes.map((r) => <RecetteCarte key={r.id} recette={r} />)}
+              {p.recettes.map((r, i) => <Revele key={r.id} delai={i * 150}><RecetteCarte recette={r} /></Revele>)}
             </div>
           </div>
         </section>

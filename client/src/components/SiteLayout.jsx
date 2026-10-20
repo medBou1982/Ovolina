@@ -1,19 +1,27 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Vague } from './Elements.jsx';
+import { HautDePage } from './Decor.jsx';
 import { SITE } from '../site.js';
 
 function Entete() {
   const [ouvert, setOuvert] = useState(false);
   const { pathname } = useLocation();
+  const [compacte, setCompacte] = useState(false);
   useEffect(() => setOuvert(false), [pathname]);
+  useEffect(() => {
+    const surDefilement = () => setCompacte(window.scrollY > 40);
+    surDefilement();
+    window.addEventListener('scroll', surDefilement, { passive: true });
+    return () => window.removeEventListener('scroll', surDefilement);
+  }, []);
 
   const lien = (to, label, end) => (
     <NavLink to={to} end={end} className={({ isActive }) => (isActive ? 'actif' : undefined)}>{label}</NavLink>
   );
 
   return (
-    <header className="entete">
+    <header className={`entete${compacte ? ' compacte' : ''}`}>
       <div className="conteneur">
         <Link to="/" className="logo" aria-label="Ovolina, accueil">
           <img src="/logo.png" alt="Ovolina – Bien sûr Bnina !" width="147" height="64" />
@@ -91,7 +99,8 @@ export default function SiteLayout() {
     <>
       <a href="#contenu" className="sr-only">Aller au contenu</a>
       <Entete />
-      <main id="contenu"><Outlet /></main>
+      <main id="contenu" key={pathname} className="page-entree"><Outlet /></main>
+      <HautDePage />
       <Pied />
     </>
   );

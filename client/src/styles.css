@@ -129,7 +129,7 @@ button, input, select, textarea { font: inherit; }
 .produit-carte strong { font-family: var(--titre); font-size: 21px; color: var(--vert); }
 .produit-carte span { font-size: 15px; color: var(--gris); }
 .produit-visuel { width: 220px; height: 220px; border-radius: 55% 45% 50% 50% / 50% 55% 45% 50%; background: var(--jaune-clair); display: flex; align-items: center; justify-content: center; overflow: hidden; transition: transform .2s; }
-.produit-carte:nth-child(even) .produit-visuel { background: var(--vert-clair); border-radius: 48% 52% 44% 56% / 55% 45% 55% 45%; }
+.produit-carte:nth-child(even) .produit-visuel, .grille-produits > :nth-child(even) .produit-visuel { background: var(--vert-clair); border-radius: 48% 52% 44% 56% / 55% 45% 55% 45%; }
 .produit-carte:hover .produit-visuel { transform: scale(1.04); }
 .produit-visuel img { width: 100%; height: 100%; object-fit: cover; }
 

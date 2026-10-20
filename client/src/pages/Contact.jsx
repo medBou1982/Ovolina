@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api } from '../api.js';
+import { Revele } from '../components/Decor.jsx';
 import { Banniere, Icone } from '../components/Elements.jsx';
 import { SITE } from '../site.js';
 
@@ -53,12 +54,12 @@ export default function Contact() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
               <strong style={{ fontFamily: 'var(--titre)', fontSize: 20, color: 'var(--vert)' }}>Nos sites</strong>
               {SITE.sites.map((s) => (
-                <div className="site-carte" key={s.ville}><strong>{s.ville}</strong><span>{s.adresse}</span></div>
+                <Revele className="site-carte" key={s.ville} delai={SITE.sites.indexOf(s) * 120}><strong>{s.ville}</strong><span>{s.adresse}</span></Revele>
               ))}
             </div>
           </div>
 
-          <form className="formulaire-contact" onSubmit={envoyer} noValidate>
+          <Revele as="form" sens="droite" className="formulaire-contact" onSubmit={envoyer} noValidate>
             <h3>Envoyez-nous un message</h3>
             {etat.ok && <p className="alerte alerte-ok" role="status">Merci ! Votre message a bien été envoyé, nous vous répondrons rapidement.</p>}
             {etat.erreur && <p className="alerte alerte-erreur" role="alert">{etat.erreur}</p>}
@@ -90,7 +91,7 @@ export default function Contact() {
             <button type="submit" className="btn btn-jaune" style={{ alignSelf: 'flex-start' }} disabled={etat.envoi}>
               {etat.envoi ? 'Envoi…' : 'Envoyer'}
             </button>
-          </form>
+          </Revele>
         </div>
       </section>
     </>

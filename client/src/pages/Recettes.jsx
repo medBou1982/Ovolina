@@ -1,5 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
 import { useCharger } from '../useCharger.js';
+import { Revele } from '../components/Decor.jsx';
 import { Banniere, EnteteSection, RecetteCarte } from '../components/Elements.jsx';
 
 const CATEGORIES = ['Toutes', 'Entrées', 'Plats', 'Desserts'];
@@ -32,7 +33,7 @@ export default function Recettes() {
           {donnees && donnees.length === 0 && <p className="vide">Aucune recette dans cette catégorie pour l’instant.</p>}
           {donnees && donnees.length > 0 && (
             <div className="grille-recettes">
-              {donnees.map((r) => <RecetteCarte key={r.id} recette={r} />)}
+              {donnees.map((r, i) => <Revele key={`${categorie}-${r.id}`} delai={(i % 3) * 120}><RecetteCarte recette={r} /></Revele>)}
             </div>
           )}
         </div>

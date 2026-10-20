@@ -1,0 +1,152 @@
+/* ===== Ovolina : mouvements et touches artistiques ===== */
+
+html, body { overflow-x: clip; }
+
+/* --- Apparition au défilement --- */
+.revele { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); transition-delay: var(--delai, 0ms); }
+.revele.gauche { transform: translateX(-36px); }
+.revele.droite { transform: translateX(36px); }
+.revele.zoom { transform: scale(.92); }
+.revele.visible { opacity: 1; transform: none; }
+
+/* --- Entrée de page --- */
+.page-entree { animation: pageEntree .6s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes pageEntree { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* --- Héros --- */
+.heros { overflow: hidden; }
+.heros::before { z-index: 1; }
+.heros > * { z-index: 2; }
+.heros > .heros-fond { position: absolute; inset: 0; z-index: 0; background-color: var(--vert); background-size: cover; background-position: center; animation: kenBurns 24s ease-in-out infinite alternate; }
+.heros > .oeufs-flottants { position: absolute; z-index: 1; }
+@keyframes kenBurns { from { transform: scale(1); } to { transform: scale(1.12) translate(-1.5%, -1%); } }
+.heros-contenu > * { animation: monte .9s cubic-bezier(.2,.7,.2,1) both; }
+.heros-contenu > *:nth-child(1) { animation-delay: .1s; }
+.heros-contenu > *:nth-child(2) { animation-delay: .25s; }
+.heros-contenu > *:nth-child(3) { animation-delay: .4s; }
+.heros-contenu > *:nth-child(4) { animation-delay: .55s; }
+@keyframes monte { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: none; } }
+
+/* Mot souligné d'un trait de pinceau qui se dessine */
+.souligne { position: relative; display: inline-block; white-space: nowrap; }
+.souligne svg { position: absolute; left: -2%; bottom: -.18em; width: 104%; height: .4em; overflow: visible; }
+.souligne path { stroke-dasharray: 400; stroke-dashoffset: 400; animation: trace 1.2s .9s cubic-bezier(.6,0,.2,1) forwards; }
+@keyframes trace { to { stroke-dashoffset: 0; } }
+
+/* Œufs qui flottent dans le héros */
+.oeufs-flottants { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.oeufs-flottants span { position: absolute; display: block; animation: flotte var(--duree, 9s) ease-in-out infinite; animation-delay: var(--retard, 0s); opacity: .9; }
+@keyframes flotte {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, -8deg)); }
+  50% { transform: translateY(-22px) rotate(calc(var(--rot, -8deg) * -1)); }
+}
+
+/* Indicateur « défiler » */
+.defiler { width: 26px; height: 42px; border: 2px solid rgba(255,255,255,.7); border-radius: 14px; position: relative; margin-top: 28px; }
+.defiler::after { content: ''; position: absolute; left: 50%; top: 8px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--jaune); animation: roulette 1.8s ease-in-out infinite; }
+@keyframes roulette { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(14px); } }
+
+/* --- Formes organiques qui respirent --- */
+.respire { animation: respire 12s ease-in-out infinite; }
+@keyframes respire {
+  0%, 100% { border-radius: 58% 42% 52% 48% / 46% 54% 46% 54%; }
+  33% { border-radius: 46% 54% 40% 60% / 56% 42% 58% 44%; }
+  66% { border-radius: 54% 46% 60% 40% / 42% 58% 44% 56%; }
+}
+.soleil-anime { animation: pulse 6s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+.traits-animes g path { transform-origin: center; animation: eclat 2.4s ease-in-out infinite; }
+.traits-animes g path:nth-child(2) { animation-delay: .2s; }
+.traits-animes g path:nth-child(3) { animation-delay: .4s; }
+@keyframes eclat { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+/* --- Badge circulaire tournant --- */
+.badge-tournant { position: absolute; width: 150px; height: 150px; z-index: 2; }
+.badge-tournant svg.texte { width: 100%; height: 100%; animation: tourne 18s linear infinite; }
+.badge-tournant .centre-badge { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+@keyframes tourne { to { transform: rotate(360deg); } }
+
+/* --- Bande défilante --- */
+.bande-defilante { background: var(--jaune); overflow: hidden; padding: 18px 0; transform: rotate(-1.5deg); margin: 24px -20px; box-shadow: 0 10px 30px rgba(0,74,39,.12); position: relative; z-index: 1; }
+.bande-defilante .piste { display: flex; width: max-content; animation: defile 32s linear infinite; }
+.bande-defilante:hover .piste { animation-play-state: paused; }
+.bande-defilante span { font-family: var(--titre); font-weight: 800; font-size: 26px; color: var(--vert-fonce); text-transform: uppercase; letter-spacing: .02em; display: inline-flex; align-items: center; gap: 28px; padding-right: 28px; white-space: nowrap; }
+.bande-defilante .script-inline { font-family: var(--script); text-transform: none; color: var(--rouge); font-size: 34px; font-weight: 700; }
+@keyframes defile { to { transform: translateX(-50%); } }
+
+/* --- Cartes produits : l'œuf se dandine --- */
+.produit-carte .produit-visuel svg, .produit-ligne .produit-visuel svg { transition: transform .4s cubic-bezier(.3,1.6,.5,1); transform-origin: 50% 90%; }
+.produit-carte:hover .produit-visuel svg, .produit-ligne:hover .produit-visuel svg { animation: dandine .9s ease-in-out; }
+@keyframes dandine {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-10deg); }
+  40% { transform: rotate(8deg); }
+  60% { transform: rotate(-5deg); }
+  80% { transform: rotate(3deg); }
+}
+.produit-visuel { position: relative; }
+.produit-visuel::after { content: ''; position: absolute; inset: -10px; border: 2px dashed var(--jaune); border-radius: inherit; opacity: 0; transform: scale(.9) rotate(0); transition: opacity .3s, transform .6s; }
+.produit-carte:hover .produit-visuel::after { opacity: 1; transform: scale(1) rotate(25deg); }
+.produit-ligne { transition: transform .3s, box-shadow .3s; }
+.produit-ligne:hover { transform: translateY(-4px); box-shadow: var(--ombre); }
+
+/* --- Cartes recettes --- */
+.recette-carte .visuel { transition: transform .5s cubic-bezier(.2,.7,.2,1), border-radius .5s; }
+.recette-carte:hover .visuel { transform: translateY(-6px) rotate(-1deg); border-radius: 120px 24px 24px 24px; }
+.recette-carte .badge { transition: transform .3s; }
+.recette-carte:hover .badge { transform: rotate(-6deg) scale(1.08); }
+
+/* --- Boutons : reflet lumineux --- */
+.btn-jaune { position: relative; overflow: hidden; }
+.btn-jaune::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.6), transparent); transform: skewX(-20deg); transition: left .6s; }
+.btn-jaune:hover::after { left: 130%; }
+
+/* --- Chiffres : formes qui ondulent --- */
+.chiffre { animation: respire 10s ease-in-out infinite; transition: transform .3s; }
+.chiffre:nth-child(2) { animation-delay: -3s; }
+.chiffre:nth-child(3) { animation-delay: -6s; }
+.chiffre:hover { transform: scale(1.06) rotate(-3deg); }
+
+/* --- Engagements : icône qui saute au survol --- */
+.engagements > div svg { transition: transform .4s cubic-bezier(.3,1.6,.5,1); }
+.engagements > div:hover svg { transform: translateY(-6px) scale(1.1); }
+
+/* --- Étapes de recette --- */
+.etape .num { transition: transform .3s, background .3s; }
+.etape:hover .num { transform: rotate(-12deg) scale(1.1); background: var(--vert); color: #fff; }
+
+/* --- Grain décoratif (petits points semés) --- */
+.semis { position: absolute; pointer-events: none; opacity: .5; }
+
+/* --- En-tête qui se compacte au défilement --- */
+.entete { transition: box-shadow .3s; position: sticky; top: 0; z-index: 30; }
+.entete.compacte { box-shadow: 0 6px 24px rgba(0,74,39,.10); }
+.entete .logo img { transition: height .3s; }
+.entete.compacte .logo img { height: 50px; }
+.nav a { position: relative; }
+.nav a::after { content: ''; position: absolute; left: 16px; right: 16px; bottom: 2px; height: 2px; background: var(--rouge); transform: scaleX(0); transition: transform .3s; transform-origin: left; }
+.nav a:hover::after, .nav a.actif::after { transform: scaleX(1); }
+@media (max-width: 860px) { .nav a::after { display: none; } }
+
+/* --- Bouton retour en haut --- */
+.haut-de-page { position: fixed; right: 20px; bottom: 20px; width: 52px; height: 52px; border-radius: 50%; border: none; background: var(--jaune); color: var(--vert-fonce); box-shadow: var(--ombre); cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(20px); pointer-events: none; transition: opacity .3s, transform .3s; z-index: 20; }
+.haut-de-page.visible { opacity: 1; transform: none; pointer-events: auto; }
+.haut-de-page:hover { transform: translateY(-3px); }
+
+/* --- Accessibilité : on coupe les mouvements pour ceux qui le demandent --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  .revele { opacity: 1; transform: none; }
+  .bande-defilante .piste { animation: none; }
+}
+
+/* --- Bannière des pages intérieures --- */
+.banniere { overflow: hidden; }
+.banniere::before { z-index: 1; }
+.banniere > * { z-index: 2; }
+.banniere > .oeufs-flottants { position: absolute; z-index: 1; opacity: .55; }
+.banniere h1 { animation: monte .8s .1s cubic-bezier(.2,.7,.2,1) both; }
+.banniere .ariane { animation: monte .8s .3s cubic-bezier(.2,.7,.2,1) both; }
+
+/* --- Page introuvable : l'œuf se dandine sans fin --- */
+.introuvable svg { animation: dandine 1.6s ease-in-out infinite; transform-origin: 50% 90%; }

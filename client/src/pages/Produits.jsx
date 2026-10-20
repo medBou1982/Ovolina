@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useCharger } from '../useCharger.js';
+import { Revele } from '../components/Decor.jsx';
 import { Banniere, Vague, VisuelProduit } from '../components/Elements.jsx';
 
 export default function Produits() {
@@ -25,15 +26,15 @@ export default function Produits() {
           {erreur && <p className="vide">Impossible de charger les produits pour le moment.</p>}
           {donnees && (
             <div className="liste-produits">
-              {donnees.map((p) => (
-                <div className="produit-ligne" key={p.id}>
+              {donnees.map((p, i) => (
+                <Revele className="produit-ligne" key={p.id} delai={(i % 2) * 150} sens={i % 2 ? 'droite' : 'gauche'}>
                   <div className="produit-visuel"><VisuelProduit produit={p} taille={84} /></div>
                   <div>
                     <h3>{p.nom}</h3>
                     <p>{p.resume}</p>
                     <Link to={`/produits/${p.slug}`} className="btn btn-jaune">Voir le produit</Link>
                   </div>
-                </div>
+                </Revele>
               ))}
             </div>
           )}

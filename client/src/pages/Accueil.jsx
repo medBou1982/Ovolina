@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useCharger } from '../useCharger.js';
 import { Vague, EnteteSection, ProduitCarte, RecetteCarte, Traits, Icone } from '../components/Elements.jsx';
+import { Revele, Compteur, OeufsFlottants, Souligne, BadgeTournant, BandeDefilante, Semis } from '../components/Decor.jsx';
 import { SITE } from '../site.js';
 
 const ENGAGEMENTS = [
@@ -10,80 +11,103 @@ const ENGAGEMENTS = [
   { titre: 'Partenariat durable', texte: 'Une relation de confiance avec nos clients.', icone: <path d="M3 12l4-4 5 3 5-3 4 4-9 8z" /> }
 ];
 
+const MOTS_BANDE = [
+  { texte: 'Frais chaque jour' },
+  { texte: 'Bien sûr Bnina !', script: true },
+  { texte: 'Traçabilité totale' },
+  { texte: 'Sfax · Grombalia · Djerba' },
+  { texte: 'Riche en goût', script: true },
+  { texte: 'De la ferme à l’assiette' }
+];
+
 export default function Accueil() {
   const produits = useCharger('/api/produits');
   const recettes = useCharger('/api/recettes?limit=3');
 
   return (
     <>
-      <section className="heros" style={{ backgroundImage: 'url(/images/heros.jpg)' }}>
+      <section className="heros">
+        <div className="heros-fond" style={{ backgroundImage: 'url(/images/heros.jpg)' }} aria-hidden="true" />
+        <OeufsFlottants />
         <Vague position="haut" />
         <div className="heros-contenu">
           <span className="script">Bien sûr Bnina !</span>
-          <h1>Des œufs frais pour vous, chaque jour !</h1>
+          <h1>Des œufs <Souligne>frais</Souligne> pour vous, chaque jour !</h1>
           <p>De nos élevages à votre table : qualité, fraîcheur et traçabilité totale.</p>
-          <Link to="/produits" className="btn btn-jaune" style={{ marginTop: 12 }}>Découvrir nos produits</Link>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Link to="/produits" className="btn btn-jaune" style={{ marginTop: 12 }}>Découvrir nos produits</Link>
+            <a href="#apropos" className="defiler" aria-label="Défiler vers la suite" />
+          </div>
         </div>
         <Vague position="bas" />
       </section>
 
-      <section className="section" id="apropos">
+      <section className="section" id="apropos" style={{ position: 'relative' }}>
+        <Semis style={{ right: '6%', top: 60 }} />
         <div className="conteneur">
-          <EnteteSection script="Bienvenue chez Ovolina" titre="Des œufs de qualité, de la ferme à votre table" />
+          <Revele><EnteteSection script="Bienvenue chez Ovolina" titre="Des œufs de qualité, de la ferme à votre table" /></Revele>
           <div className="deux-colonnes">
-            <div className="forme-organique">
-              <div className="soleil" />
+            <Revele sens="gauche" className="forme-organique">
+              <div className="soleil soleil-anime" />
               <Traits style={{ position: 'absolute', top: 0, left: 0 }} />
-              <div className="photo" style={{ backgroundImage: 'url(/images/apropos.jpg)' }} role="img" aria-label="Élevage Ovolina" />
-            </div>
+              <div className="photo respire" style={{ backgroundImage: 'url(/images/apropos.jpg)' }} role="img" aria-label="Élevage Ovolina" />
+              <BadgeTournant style={{ right: '2%', bottom: '2%' }} />
+            </Revele>
             <div className="texte-bloc">
-              <p>Ovolina est une holding agro-industrielle engagée dans la production et l’emballage d’œufs de poule. Notre chaîne de valeur intégrée place la qualité, la traçabilité et la durabilité au cœur de notre métier.</p>
-              <div className="carte-ombre">
+              <Revele delai={0}><p>Ovolina est une holding agro-industrielle engagée dans la production et l’emballage d’œufs de poule. Notre chaîne de valeur intégrée place la qualité, la traçabilité et la durabilité au cœur de notre métier.</p></Revele>
+              <Revele delai={120} sens="droite" className="carte-ombre">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C8221A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><path d="M5 19c0-8 6-14 15-14 0 9-6 15-14 15" /><path d="M5 19l7-7" /></svg>
                 <div><strong>Élevages contrôlés</strong>Des poules élevées dans le respect du bien-être animal.</div>
-              </div>
-              <div className="carte-ombre">
+              </Revele>
+              <Revele delai={240} sens="droite" className="carte-ombre">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C8221A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ flexShrink: 0 }}><rect x="3" y="7" width="13" height="10" rx="1" /><path d="M16 10h3l2 3v4h-5" /><circle cx="7" cy="18" r="1.8" /><circle cx="18" cy="18" r="1.8" /></svg>
                 <div><strong>Livraison rapide et fiable</strong>Un réseau logistique optimisé pour garantir la fraîcheur.</div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 8 }}>
+              </Revele>
+              <Revele delai={360} style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 8 }}>
                 <span className="pastille-icone">{Icone.telephone()}</span>
                 <div>
                   <span className="script" style={{ display: 'block', fontSize: 24, color: 'var(--texte)' }}>Une commande ? Appelez-nous</span>
                   <a href={`tel:${SITE.telephoneLien}`} style={{ fontFamily: 'var(--titre)', fontWeight: 700, fontSize: 22, textDecoration: 'none' }}>{SITE.telephone}</a>
                 </div>
-              </div>
+              </Revele>
             </div>
           </div>
         </div>
       </section>
 
+      <BandeDefilante mots={MOTS_BANDE} />
+
       <section className="section-grise">
         <div className="conteneur" style={{ paddingTop: 72, paddingBottom: 72 }}>
           <div className="engagements">
-            {ENGAGEMENTS.map((e) => (
-              <div key={e.titre}>
+            {ENGAGEMENTS.map((e, i) => (
+              <Revele key={e.titre} delai={i * 120}>
                 <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#006838" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{e.icone}</svg>
                 <strong>{e.titre}</strong>
                 <span>{e.texte}</span>
-              </div>
+              </Revele>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" style={{ position: 'relative' }}>
+        <Semis style={{ left: '4%', top: 90 }} couleur="#C8221A" />
         <div className="conteneur">
-          <EnteteSection script="Notre gamme" titre="Nos produits" />
+          <Revele><EnteteSection script="Notre gamme" titre="Nos produits" /></Revele>
           {produits.chargement && <p className="chargement">Chargement…</p>}
           {produits.donnees && (
             <div className="grille-produits">
-              {produits.donnees.map((p) => <ProduitCarte key={p.id} produit={p} />)}
+              {produits.donnees.map((p, i) => (
+                <Revele key={p.id} delai={i * 120} sens="zoom">
+                  <ProduitCarte produit={p} />
+                </Revele>
+              ))}
             </div>
           )}
-          <div className="centre" style={{ marginTop: 48 }}>
+          <Revele className="centre" style={{ marginTop: 48 }}>
             <Link to="/produits" className="btn btn-jaune">Toute la gamme</Link>
-          </div>
+          </Revele>
         </div>
       </section>
 
@@ -91,13 +115,13 @@ export default function Accueil() {
         <Vague position="haut" variante={1} />
         <div className="conteneur">
           <div className="chiffres">
-            <div className="chiffre"><strong>3</strong><span>sites</span></div>
-            <div className="chiffre"><strong>{produits.donnees?.length || 4}</strong><span>gammes</span></div>
+            <Revele sens="zoom"><div className="chiffre"><Compteur valeur={3} /><span>sites</span></div></Revele>
+            <Revele sens="zoom" delai={150}><div className="chiffre" style={{ animationDelay: '-4s' }}><Compteur valeur={produits.donnees?.length || 4} /><span>gammes</span></div></Revele>
           </div>
-          <div style={{ flex: '1 1 360px', display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
+          <Revele sens="droite" style={{ flex: '1 1 360px', display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
             <h2>Grande distribution, restauration, industrie : nous livrons les professionnels partout en Tunisie.</h2>
             <Link to="/contact" className="btn btn-jaune">Nous contacter</Link>
-          </div>
+          </Revele>
         </div>
         <Vague position="bas" variante={1} />
       </section>
@@ -105,13 +129,15 @@ export default function Accueil() {
       {recettes.donnees?.length > 0 && (
         <section className="section">
           <div className="conteneur">
-            <EnteteSection script="Inspirations culinaires" titre="Nos recettes favorites" />
+            <Revele><EnteteSection script="Inspirations culinaires" titre="Nos recettes favorites" /></Revele>
             <div className="grille-recettes">
-              {recettes.donnees.map((r) => <RecetteCarte key={r.id} recette={r} />)}
+              {recettes.donnees.map((r, i) => (
+                <Revele key={r.id} delai={i * 150}><RecetteCarte recette={r} /></Revele>
+              ))}
             </div>
-            <div className="centre" style={{ marginTop: 48 }}>
+            <Revele className="centre" style={{ marginTop: 48 }}>
               <Link to="/recettes" className="btn btn-jaune">Toutes les recettes</Link>
-            </div>
+            </Revele>
           </div>
         </section>
       )}

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { OeufsFlottants } from './Decor.jsx';
 
 // Bord ondulé entre deux sections. "haut" : la vague mord le haut de la section.
 export function Vague({ couleur = '#fff', position = 'haut', variante = 0 }) {
@@ -32,6 +33,7 @@ export function VisuelProduit({ produit, taille = 96 }) {
 export function Banniere({ titre, ariane = [] }) {
   return (
     <section className="banniere" style={{ backgroundImage: 'url(/images/banniere.jpg)' }}>
+      <OeufsFlottants />
       <Vague position="haut" />
       <div className="conteneur">
         <h1>{titre}</h1>
