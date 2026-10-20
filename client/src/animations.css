@@ -219,3 +219,6 @@ html, body { overflow-x: clip; }
 .ingredients.sous-preparation { margin-top: 16px; }
 .ingredients.sous-preparation ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px 28px; }
 .colonnes-recette > div > .produit-utilise { align-self: stretch; }
+/* Recette avec story : la vidéo passe à droite (et reste en haut sur téléphone) */
+.colonnes-recette.avec-video > aside { order: 2; }
+@media (max-width: 860px) { .colonnes-recette.avec-video > aside { order: 0; } }

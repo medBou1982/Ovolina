@@ -73,7 +73,7 @@ export default function Recette() {
       </section>
 
       <section style={{ paddingBottom: 88 }}>
-        <div className="conteneur colonnes-recette">
+        <div className={`conteneur colonnes-recette${avecVideo ? ' avec-video' : ''}`}>
           <aside>
             {r.video_youtube && (
               <Revele sens="zoom"><VideoRecette id={r.video_youtube} titre={r.titre} /></Revele>
