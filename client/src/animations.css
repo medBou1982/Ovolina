@@ -216,7 +216,7 @@ html, body { overflow-x: clip; }
 .story-texte strong { font-family: var(--titre); font-weight: 800; font-size: 21px; line-height: 1.2; }
 .colonnes-recette > aside .story { margin-bottom: 8px; }
 .recette-carte .badge-video { position: absolute; right: 16px; bottom: 16px; display: inline-flex; align-items: center; gap: 5px; background: var(--vert-fonce); color: #fff; font-family: var(--titre); font-weight: 700; font-size: 12px; text-transform: uppercase; padding: 5px 12px 5px 10px; border-radius: 999px; }
-.ingredients.sous-preparation { margin-top: 16px; }
+.ingredients.sous-preparation { margin-bottom: 16px; }
 .ingredients.sous-preparation ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px 28px; }
 .colonnes-recette > div > .produit-utilise { align-self: stretch; }
 /* Recette avec story : la vidéo passe à droite (et reste en haut sur téléphone) */

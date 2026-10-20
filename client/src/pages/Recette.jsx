@@ -23,24 +23,20 @@ export default function Recette() {
   const ingredients = lignes(r.ingredients);
   const avecVideo = !!r.video_youtube;
 
-  // Avec une story vidéo, les ingrédients passent sous la préparation pour laisser la story seule à côté
-  const blocIngredients = (
-    <>
-      {ingredients.length > 0 && (
-        <Revele className={`ingredients${avecVideo ? ' sous-preparation' : ''}`}>
-          <h3>Ingrédients</h3>
-          <ul>{ingredients.map((i) => <li key={i}>{i}</li>)}</ul>
-        </Revele>
-      )}
-      {r.produit && (
-        <Link to={`/produits/${r.produit.slug}`} className="produit-utilise">
-          <span className="vignette" style={{ width: 64, height: 64, borderRadius: '50%' }}>
-            {r.produit.image ? <img src={r.produit.image} alt="" /> : <Oeuf jaune={r.produit.couleur_jaune} taille={30} />}
-          </span>
-          <span><span className="script">Produit utilisé</span><strong>Œufs {r.produit.nom} →</strong></span>
-        </Link>
-      )}
-    </>
+  // Avec une story vidéo, la colonne principale suit l'ordre : ingrédients, préparation, produit utilisé
+  const blocIngredients = ingredients.length > 0 && (
+    <Revele className={`ingredients${avecVideo ? ' sous-preparation' : ''}`}>
+      <h3>Ingrédients</h3>
+      <ul>{ingredients.map((i) => <li key={i}>{i}</li>)}</ul>
+    </Revele>
+  );
+  const blocProduit = r.produit && (
+    <Link to={`/produits/${r.produit.slug}`} className="produit-utilise">
+      <span className="vignette" style={{ width: 64, height: 64, borderRadius: '50%' }}>
+        {r.produit.image ? <img src={r.produit.image} alt="" /> : <Oeuf jaune={r.produit.couleur_jaune} taille={30} />}
+      </span>
+      <span><span className="script">Produit utilisé</span><strong>Œufs {r.produit.nom} →</strong></span>
+    </Link>
   );
   const etapes = lignes(r.etapes);
 
@@ -79,8 +75,10 @@ export default function Recette() {
               <Revele sens="zoom"><VideoRecette id={r.video_youtube} titre={r.titre} /></Revele>
             )}
             {!avecVideo && blocIngredients}
+            {!avecVideo && blocProduit}
           </aside>
           <div>
+            {avecVideo && blocIngredients}
             <h3 style={{ fontSize: 28, fontWeight: 800 }}>Préparation</h3>
             {etapes.map((e, i) => (
               <Revele className="etape" key={i} delai={i * 120} sens="droite">
@@ -88,7 +86,7 @@ export default function Recette() {
                 <p>{e}</p>
               </Revele>
             ))}
-            {avecVideo && blocIngredients}
+            {avecVideo && blocProduit}
           </div>
         </div>
       </section>
