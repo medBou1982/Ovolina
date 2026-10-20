@@ -1,13 +1,10 @@
 // Crée les tables, le premier compte admin et les données de départ.
 // Sans risque à relancer : rien n'est écrasé.
 import 'dotenv/config';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import bcrypt from 'bcryptjs';
 import { pool, query } from '../src/db.js';
+import { preparerBase } from '../src/infosSite.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const PRODUITS = [
   {
@@ -65,8 +62,8 @@ const RECETTES = [
 ];
 
 async function main() {
-  console.log('1/3 Création des tables…');
-  await query(fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8'));
+  console.log('1/3 Création des tables et des infos du site…');
+  await preparerBase();
 
   console.log('2/3 Compte administrateur…');
   const email = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();

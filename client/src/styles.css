@@ -318,3 +318,23 @@ button, input, select, textarea { font: inherit; }
 .connexion form h2 { font-size: 32px; font-weight: 800; }
 @media (max-width: 700px) { .connexion .gauche { padding: 32px 24px; } }
 .sr-only:focus { position: fixed; top: 12px; left: 12px; width: auto; height: auto; clip: auto; z-index: 100; background: var(--jaune); color: var(--vert-fonce); padding: 10px 16px; border-radius: 12px; font-weight: 700; }
+
+/* ===== Admin : infos du site ===== */
+.form-site { display: flex; flex-direction: column; gap: 24px; max-width: 980px; }
+.bloc-site { padding: 28px; display: flex; flex-direction: column; gap: 16px; }
+.bloc-site h2 { font-size: 20px; font-weight: 700; }
+.aide-bloc { margin: -10px 0 4px; color: var(--gris); font-size: 14px; }
+.grille-reseaux { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 16px; }
+.liste-edit { display: flex; flex-direction: column; gap: 12px; }
+.ligne-edit { display: grid; gap: 12px; align-items: end; background: var(--fond); border-radius: 16px; padding: 14px; }
+.ligne-site { grid-template-columns: minmax(120px, 1fr) minmax(200px, 2.4fr) auto; }
+.ligne-chiffre { grid-template-columns: 110px 80px minmax(140px, 1.4fr) minmax(140px, 1.4fr) auto; }
+@media (max-width: 760px) {
+  .ligne-site, .ligne-chiffre { grid-template-columns: 1fr 1fr; }
+  .ligne-edit .outils-ligne { grid-column: 1 / -1; justify-content: flex-end; }
+}
+.outils-ligne { display: flex; gap: 6px; padding-bottom: 4px; }
+.outils-ligne .btn-petit:disabled { opacity: .35; cursor: default; }
+.bloc-site .ajout { align-self: flex-start; }
+.barre-enregistrer { position: sticky; bottom: 0; background: rgba(245, 246, 242, .94); backdrop-filter: blur(6px); padding: 16px 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 14px; border-top: 1px solid var(--bord); }
+.non-enregistre { color: #6B4E00; font-weight: 600; font-size: 14px; }

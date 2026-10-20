@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useCharger } from '../useCharger.js';
 import { Vague, EnteteSection, ProduitCarte, RecetteCarte, Traits, Icone } from '../components/Elements.jsx';
 import { Revele, Compteur, OeufsFlottants, Souligne, BadgeTournant, BandeDefilante, Semis, Oiseau } from '../components/Decor.jsx';
-import { SITE } from '../site.js';
+import { useSite } from '../SiteContext.jsx';
 
 const ENGAGEMENTS = [
   { titre: 'Qualité & sécurité', texte: 'Normes sanitaires et certifications respectées.', icone: <><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" /><path d="M9 12l2 2 4-4" /></> },
@@ -21,6 +21,7 @@ const MOTS_BANDE = [
 ];
 
 export default function Accueil() {
+  const SITE = useSite();
   const produits = useCharger('/api/produits');
   const recettes = useCharger('/api/recettes?limit=3');
 
@@ -123,9 +124,9 @@ export default function Accueil() {
               <Link to="/contact" className="btn btn-jaune">Devenir revendeur</Link>
             </Revele>
           </div>
-          <div className="stats">
+          {SITE.chiffres.length > 0 && <div className="stats">
             {SITE.chiffres.map((c, i) => (
-              <Revele key={c.label} sens="zoom" delai={i * 130}>
+              <Revele key={c.id ?? c.label} sens="zoom" delai={i * 130}>
                 <div className="stat">
                   <Compteur valeur={c.valeur} suffixe={c.suffixe} />
                   <span className="label">{c.label}</span>
@@ -134,7 +135,7 @@ export default function Accueil() {
                 </div>
               </Revele>
             ))}
-          </div>
+          </div>}
         </div>
         <Vague position="bas" variante={1} />
       </section>

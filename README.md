@@ -15,6 +15,7 @@ Site vitrine Ovolina avec une interface d'administration simple.
 - Produits : ajouter, modifier, masquer, supprimer, photo, ordre d'affichage
 - Recettes : idem, avec catégorie, ingrédients, étapes et produit utilisé
 - Messages : lecture, « traité / nouveau », réponse par email, suppression
+- Infos du site : email, téléphone, réseaux sociaux, adresses des sites, chiffres clés de l'accueil
 - Changement du mot de passe
 
 ## Prérequis
@@ -54,6 +55,8 @@ npm run db:init     # crée les tables, le compte admin et les 4 gammes d'œufs
 
 `db:init` peut être relancé sans risque : il ne supprime ni n'écrase rien.
 
+Après une mise à jour du code (`git pull`), il suffit de redémarrer le serveur : il crée lui-même les nouvelles tables éventuelles, sans toucher aux données existantes.
+
 **4. Lancer en développement** (deux terminaux)
 
 ```bash
@@ -76,7 +79,7 @@ Un seul processus Node à héberger (VPS, Render, Railway…). Placez-le derriè
 
 ## Personnaliser
 
-- **Coordonnées** (email, téléphone, adresses) : `client/src/site.js`
+- **Coordonnées, réseaux sociaux, sites, chiffres clés** : dans l'administration, menu « Infos du site »
 - **Logo** : `client/public/logo.png`
 - **Photos fixes** (accueil, bannières) : `client/public/images/` (voir `A_LIRE.txt`)
 - **Couleurs** : variables en haut de `client/src/styles.css`
@@ -92,7 +95,7 @@ ovolina/
 │       ├── admin/          écrans d'administration
 │       ├── components/     en-tête, pied de page, cartes, vagues…
 │       ├── api.js          appels au serveur
-│       ├── site.js         coordonnées de l'entreprise
+│       ├── SiteContext.jsx infos du site chargées depuis la base
 │       └── styles.css      design (couleurs Ovolina)
 └── server/                 Serveur Node.js
     ├── db/schema.sql       tables PostgreSQL
@@ -107,11 +110,13 @@ ovolina/
 | --- | --- | --- |
 | GET | `/api/produits`, `/api/produits/:slug` | public |
 | GET | `/api/recettes?categorie=Plats`, `/api/recettes/:slug` | public |
+| GET | `/api/site` (coordonnées, réseaux, sites, chiffres) | public |
 | POST | `/api/contact` | public |
 | POST | `/api/auth/login` | public |
 | GET/POST/PUT/DELETE | `/api/admin/produits[/:id]` | admin |
 | GET/POST/PUT/DELETE | `/api/admin/recettes[/:id]` | admin |
 | GET/PATCH/DELETE | `/api/admin/messages[/:id]` | admin |
+| PUT | `/api/admin/site` | admin |
 | POST | `/api/admin/mot-de-passe` | admin |
 
 Les routes admin attendent l'en-tête `Authorization: Bearer <jeton>` reçu à la connexion (valable 7 jours).

@@ -1,12 +1,18 @@
 import { Router } from 'express';
 import { query } from '../db.js';
 import { wrap } from '../utils.js';
+import { lireSite } from '../infosSite.js';
 
 const router = Router();
 
 const PRODUIT_COLS = `id, nom, slug, resume, description, points_forts, formats, nutrition, couleur_jaune, image, ordre`;
 const RECETTE_COLS = `r.id, r.titre, r.slug, r.categorie, r.resume, r.image, r.temps_preparation, r.personnes,
   r.difficulte, r.ingredients, r.etapes, r.produit_id`;
+
+// Infos générales : coordonnées, réseaux sociaux, sites, chiffres
+router.get('/site', wrap(async (req, res) => {
+  res.json(await lireSite());
+}));
 
 // Liste des produits visibles
 router.get('/produits', wrap(async (req, res) => {

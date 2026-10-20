@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { api } from '../api.js';
 import { Revele } from '../components/Decor.jsx';
 import { Banniere, Icone } from '../components/Elements.jsx';
-import { SITE } from '../site.js';
+import { useSite } from '../SiteContext.jsx';
 
 const VIDE = { nom: '', telephone: '', email: '', profil: 'Particulier', message: '', site: '' };
 
 export default function Contact() {
+  const SITE = useSite();
   const [form, setForm] = useState(VIDE);
   const [etat, setEtat] = useState({ envoi: false, ok: false, erreur: null, erreurs: {} });
 
@@ -54,7 +55,7 @@ export default function Contact() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
               <strong style={{ fontFamily: 'var(--titre)', fontSize: 20, color: 'var(--vert)' }}>Nos sites</strong>
               {SITE.sites.map((s) => (
-                <Revele className="site-carte" key={s.ville} delai={SITE.sites.indexOf(s) * 120}><strong>{s.ville}</strong><span>{s.adresse}</span></Revele>
+                <Revele className="site-carte" key={s.id ?? s.ville} delai={SITE.sites.indexOf(s) * 120}><strong>{s.ville}</strong><span>{s.adresse}</span></Revele>
               ))}
             </div>
           </div>

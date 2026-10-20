@@ -15,6 +15,7 @@ import AdminRecettes from './admin/AdminRecettes.jsx';
 import AdminRecetteForm from './admin/AdminRecetteForm.jsx';
 import AdminMessages from './admin/AdminMessages.jsx';
 import AdminCompte from './admin/AdminCompte.jsx';
+import AdminSite from './admin/AdminSite.jsx';
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="recettes/nouvelle" element={<AdminRecetteForm />} />
         <Route path="recettes/:id" element={<AdminRecetteForm />} />
         <Route path="messages" element={<AdminMessages />} />
+        <Route path="site" element={<AdminSite />} />
         <Route path="compte" element={<AdminCompte />} />
       </Route>
     </Routes>

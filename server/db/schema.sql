@@ -56,3 +56,27 @@ CREATE TABLE IF NOT EXISTS messages (
 
 CREATE INDEX IF NOT EXISTS recettes_produit_idx ON recettes(produit_id);
 CREATE INDEX IF NOT EXISTS messages_recu_idx ON messages(recu_le DESC);
+
+-- Informations générales du site (email, téléphone, réseaux sociaux…)
+CREATE TABLE IF NOT EXISTS parametres (
+  cle TEXT PRIMARY KEY,
+  valeur TEXT NOT NULL DEFAULT ''
+);
+
+-- Sites de production affichés dans le contact et le pied de page
+CREATE TABLE IF NOT EXISTS sites (
+  id SERIAL PRIMARY KEY,
+  ville TEXT NOT NULL,
+  adresse TEXT NOT NULL DEFAULT '',
+  ordre INT NOT NULL DEFAULT 0
+);
+
+-- Chiffres clés de la page d'accueil
+CREATE TABLE IF NOT EXISTS chiffres (
+  id SERIAL PRIMARY KEY,
+  valeur INT NOT NULL DEFAULT 0,
+  suffixe TEXT NOT NULL DEFAULT '',
+  label TEXT NOT NULL,
+  detail TEXT NOT NULL DEFAULT '',
+  ordre INT NOT NULL DEFAULT 0
+);

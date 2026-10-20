@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { SITE } from '../site.js';
+import { useSite } from '../SiteContext.jsx';
 import { useCharger } from '../useCharger.js';
 import { Oiseau, Revele } from './Decor.jsx';
 
@@ -47,6 +47,7 @@ function Paysage() {
 }
 
 export default function Pied() {
+  const SITE = useSite();
   const produits = useCharger('/api/produits');
   const reseaux = Object.entries(SITE.reseaux || {}).filter(([cle, url]) => url && ICONES_RESEAUX[cle]);
 
@@ -117,7 +118,7 @@ export default function Pied() {
               {SITE.email}
             </a>
             {SITE.sites.map((s) => (
-              <div className="pied-site" key={s.ville}>
+              <div className="pied-site" key={s.id ?? s.ville}>
                 <Pastille><svg width="16" height="16" viewBox="0 0 24 24" {...trait}><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg></Pastille>
                 <span><strong>{s.ville}</strong>{s.adresse}</span>
               </div>

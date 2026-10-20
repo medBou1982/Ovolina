@@ -4,6 +4,7 @@ import { query } from '../db.js';
 import { requireAuth, signToken } from '../auth.js';
 import { upload, imageUrl } from '../upload.js';
 import { wrap, uniqueSlug, toBool, toInt, removeUpload } from '../utils.js';
+import { lireSite, validerSite, ecrireSite } from '../infosSite.js';
 
 const router = Router();
 
@@ -232,6 +233,15 @@ router.delete('/admin/messages/:id', wrap(async (req, res) => {
   const { rowCount } = await query('DELETE FROM messages WHERE id = $1', [toInt(req.params.id)]);
   if (!rowCount) return res.status(404).json({ error: 'Message introuvable' });
   res.status(204).end();
+}));
+
+// ---------- Infos du site ----------
+
+router.put('/admin/site', wrap(async (req, res) => {
+  const { donnees, erreur } = validerSite(req.body);
+  if (erreur) return res.status(400).json({ error: erreur });
+  await ecrireSite(donnees);
+  res.json(await lireSite());
 }));
 
 // ---------- Mot de passe ----------
