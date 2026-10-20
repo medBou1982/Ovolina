@@ -56,6 +56,14 @@ export default function Recette() {
               {r.personnes ? <span>{Icone.personnes()}{r.personnes} personne{r.personnes > 1 ? 's' : ''}</span> : null}
               <span>{Icone.niveau()}{r.difficulte}</span>
             </div>
+            {r.produit && (
+              <Link to={`/produits/${r.produit.slug}`} className="produit-utilise sous-details">
+                <span className="vignette" style={{ width: 64, height: 64, borderRadius: '50%' }}>
+                  {r.produit.image ? <img src={r.produit.image} alt="" /> : <Oeuf jaune={r.produit.couleur_jaune} taille={30} />}
+                </span>
+                <span><span className="script">Produit utilisé</span><strong>Œufs {r.produit.nom} →</strong></span>
+              </Link>
+            )}
           </div>
         </div>
       </section>
@@ -67,14 +75,6 @@ export default function Recette() {
               <Revele sens="zoom"><VideoRecette id={r.video_youtube} titre={r.titre} /></Revele>
             )}
             {!avecVideo && blocIngredients}
-            {r.produit && (
-              <Link to={`/produits/${r.produit.slug}`} className="produit-utilise">
-                <span className="vignette" style={{ width: 64, height: 64, borderRadius: '50%' }}>
-                  {r.produit.image ? <img src={r.produit.image} alt="" /> : <Oeuf jaune={r.produit.couleur_jaune} taille={30} />}
-                </span>
-                <span><span className="script">Produit utilisé</span><strong>Œufs {r.produit.nom} →</strong></span>
-              </Link>
-            )}
           </aside>
           <div>
             <h3 style={{ fontSize: 28, fontWeight: 800 }}>Préparation</h3>
