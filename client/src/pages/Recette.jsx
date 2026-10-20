@@ -24,11 +24,23 @@ export default function Recette() {
   const avecVideo = !!r.video_youtube;
 
   // Avec une story vidéo, les ingrédients passent sous la préparation pour laisser la story seule à côté
-  const blocIngredients = ingredients.length > 0 && (
-    <Revele className={`ingredients${avecVideo ? ' sous-preparation' : ''}`}>
-      <h3>Ingrédients</h3>
-      <ul>{ingredients.map((i) => <li key={i}>{i}</li>)}</ul>
-    </Revele>
+  const blocIngredients = (
+    <>
+      {ingredients.length > 0 && (
+        <Revele className={`ingredients${avecVideo ? ' sous-preparation' : ''}`}>
+          <h3>Ingrédients</h3>
+          <ul>{ingredients.map((i) => <li key={i}>{i}</li>)}</ul>
+        </Revele>
+      )}
+      {r.produit && (
+        <Link to={`/produits/${r.produit.slug}`} className="produit-utilise">
+          <span className="vignette" style={{ width: 64, height: 64, borderRadius: '50%' }}>
+            {r.produit.image ? <img src={r.produit.image} alt="" /> : <Oeuf jaune={r.produit.couleur_jaune} taille={30} />}
+          </span>
+          <span><span className="script">Produit utilisé</span><strong>Œufs {r.produit.nom} →</strong></span>
+        </Link>
+      )}
+    </>
   );
   const etapes = lignes(r.etapes);
 
@@ -56,14 +68,6 @@ export default function Recette() {
               {r.personnes ? <span>{Icone.personnes()}{r.personnes} personne{r.personnes > 1 ? 's' : ''}</span> : null}
               <span>{Icone.niveau()}{r.difficulte}</span>
             </div>
-            {r.produit && (
-              <Link to={`/produits/${r.produit.slug}`} className="produit-utilise sous-details">
-                <span className="vignette" style={{ width: 64, height: 64, borderRadius: '50%' }}>
-                  {r.produit.image ? <img src={r.produit.image} alt="" /> : <Oeuf jaune={r.produit.couleur_jaune} taille={30} />}
-                </span>
-                <span><span className="script">Produit utilisé</span><strong>Œufs {r.produit.nom} →</strong></span>
-              </Link>
-            )}
           </div>
         </div>
       </section>

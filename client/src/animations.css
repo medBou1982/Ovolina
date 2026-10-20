@@ -218,4 +218,4 @@ html, body { overflow-x: clip; }
 .recette-carte .badge-video { position: absolute; left: 16px; bottom: 16px; display: inline-flex; align-items: center; gap: 5px; background: var(--vert-fonce); color: #fff; font-family: var(--titre); font-weight: 700; font-size: 12px; text-transform: uppercase; padding: 5px 12px 5px 10px; border-radius: 999px; }
 .ingredients.sous-preparation { margin-top: 16px; }
 .ingredients.sous-preparation ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px 28px; }
-.produit-utilise.sous-details { margin-top: 8px; padding: 18px 24px; align-self: stretch; max-width: 420px; }
+.colonnes-recette > div > .produit-utilise { align-self: flex-start; min-width: min(100%, 360px); }
