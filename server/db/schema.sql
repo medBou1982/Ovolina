@@ -93,3 +93,20 @@ CREATE TABLE IF NOT EXISTS variantes (
   ordre INT NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS variantes_produit_idx ON variantes(produit_id);
+
+-- Articles du blog
+CREATE TABLE IF NOT EXISTS articles (
+  id SERIAL PRIMARY KEY,
+  titre TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  categorie TEXT NOT NULL DEFAULT 'Actualités',
+  extrait TEXT NOT NULL DEFAULT '',          -- court résumé affiché dans les listes
+  contenu TEXT NOT NULL DEFAULT '',          -- texte de l'article (mise en forme simple)
+  image TEXT,
+  auteur TEXT NOT NULL DEFAULT 'L’équipe Ovolina',
+  publie BOOLEAN NOT NULL DEFAULT FALSE,     -- faux = brouillon, invisible sur le site
+  publie_le TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  cree_le TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  modifie_le TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS articles_publie_idx ON articles(publie, publie_le DESC);

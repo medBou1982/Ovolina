@@ -3,6 +3,7 @@ import { useCharger } from '../useCharger.js';
 import { Vague, EnteteSection, ProduitCarte, RecetteCarte, Traits, Icone } from '../components/Elements.jsx';
 import { Revele, Compteur, OeufsFlottants, Souligne, BadgeTournant, BandeDefilante, Semis, Oiseau } from '../components/Decor.jsx';
 import { useSite } from '../SiteContext.jsx';
+import { ArticleCarte } from '../components/Blog.jsx';
 
 const ENGAGEMENTS = [
   { titre: 'Qualité & sécurité', texte: 'Normes sanitaires et certifications respectées.', icone: <><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" /><path d="M9 12l2 2 4-4" /></> },
@@ -24,6 +25,7 @@ export default function Accueil() {
   const SITE = useSite();
   const produits = useCharger('/api/produits');
   const recettes = useCharger('/api/recettes?limit=3');
+  const articles = useCharger('/api/articles?limit=3');
 
   return (
     <>
@@ -151,6 +153,19 @@ export default function Accueil() {
             </div>
             <Revele className="centre" style={{ marginTop: 48 }}>
               <Link to="/recettes" className="btn btn-jaune">Toutes les recettes</Link>
+            </Revele>
+          </div>
+        </section>
+      )}
+      {articles.donnees?.length > 0 && (
+        <section className="section section-grise">
+          <div className="conteneur">
+            <Revele><EnteteSection script="Le blog Ovolina" titre="Actualités, conseils et coulisses" /></Revele>
+            <div className="grille-articles">
+              {articles.donnees.map((a, i) => <Revele key={a.id} delai={i * 150}><ArticleCarte article={a} /></Revele>)}
+            </div>
+            <Revele className="centre" style={{ marginTop: 48 }}>
+              <Link to="/blog" className="btn btn-jaune">Tous les articles</Link>
             </Revele>
           </div>
         </section>

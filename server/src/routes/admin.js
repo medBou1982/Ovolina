@@ -4,6 +4,7 @@ import { query } from '../db.js';
 import { requireAuth, signToken } from '../auth.js';
 import { upload, uploadPlusieurs, imageUrl } from '../upload.js';
 import { avecVariantes, validerVariantes, enregistrerVariantes } from '../variantes.js';
+import { CATEGORIES_BLOG, SQL_MINUTES } from '../articles.js';
 import { wrap, uniqueSlug, toBool, toInt, removeUpload } from '../utils.js';
 import { lireSite, validerSite, ecrireSite } from '../infosSite.js';
 
@@ -227,6 +228,83 @@ router.put('/admin/recettes/:id', upload.single('image'), wrap(async (req, res) 
 router.delete('/admin/recettes/:id', wrap(async (req, res) => {
   const { rows } = await query('DELETE FROM recettes WHERE id = $1 RETURNING image', [toInt(req.params.id)]);
   if (!rows[0]) return res.status(404).json({ error: 'Recette introuvable' });
+  await removeUpload(rows[0].image);
+  res.status(204).end();
+}));
+
+// ---------- Blog ----------
+
+function articleFields(body) {
+  const date = body.publie_le ? new Date(body.publie_le) : new Date();
+  return {
+    titre: String(body.titre || '').trim().slice(0, 200),
+    categorie: CATEGORIES_BLOG.includes(body.categorie) ? body.categorie : 'Actualités',
+    extrait: String(body.extrait || '').trim().slice(0, 400),
+    contenu: String(body.contenu || '').trim().slice(0, 100000),
+    auteur: String(body.auteur || '').trim().slice(0, 100) || 'L’équipe Ovolina',
+    publie: toBool(body.publie, false),
+    publie_le: Number.isNaN(date.getTime()) ? new Date() : date
+  };
+}
+
+router.get('/admin/articles', wrap(async (req, res) => {
+  const { rows } = await query(
+    `SELECT id, titre, slug, categorie, extrait, image, auteur, publie, publie_le, modifie_le, ${SQL_MINUTES}
+     FROM articles ORDER BY publie_le DESC`
+  );
+  res.json(rows);
+}));
+
+router.get('/admin/articles/:id', wrap(async (req, res) => {
+  const { rows } = await query('SELECT * FROM articles WHERE id = $1', [toInt(req.params.id)]);
+  if (!rows[0]) return res.status(404).json({ error: 'Article introuvable' });
+  res.json(rows[0]);
+}));
+
+router.post('/admin/articles', upload.single('image'), wrap(async (req, res) => {
+  const f = articleFields(req.body);
+  if (!f.titre) {
+    await removeUpload(imageUrl(req.file));
+    return res.status(400).json({ error: 'Le titre est obligatoire' });
+  }
+  const slug = await uniqueSlug(query, 'articles', req.body.slug || f.titre);
+  const { rows } = await query(
+    `INSERT INTO articles (titre, slug, categorie, extrait, contenu, image, auteur, publie, publie_le)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+    [f.titre, slug, f.categorie, f.extrait, f.contenu, imageUrl(req.file), f.auteur, f.publie, f.publie_le]
+  );
+  res.status(201).json(rows[0]);
+}));
+
+router.put('/admin/articles/:id', upload.single('image'), wrap(async (req, res) => {
+  const id = toInt(req.params.id);
+  const { rows: old } = await query('SELECT * FROM articles WHERE id = $1', [id]);
+  if (!old[0]) {
+    await removeUpload(imageUrl(req.file));
+    return res.status(404).json({ error: 'Article introuvable' });
+  }
+  const f = articleFields(req.body);
+  if (!f.titre) {
+    await removeUpload(imageUrl(req.file));
+    return res.status(400).json({ error: 'Le titre est obligatoire' });
+  }
+  const slug = await uniqueSlug(query, 'articles', req.body.slug || f.titre, id);
+  let image = old[0].image;
+  if (req.file) image = imageUrl(req.file);
+  else if (toBool(req.body.supprimer_image, false)) image = null;
+  const { rows } = await query(
+    `UPDATE articles SET titre=$1, slug=$2, categorie=$3, extrait=$4, contenu=$5, image=$6, auteur=$7,
+       publie=$8, publie_le=$9, modifie_le=NOW()
+     WHERE id=$10 RETURNING *`,
+    [f.titre, slug, f.categorie, f.extrait, f.contenu, image, f.auteur, f.publie, f.publie_le, id]
+  );
+  if (image !== old[0].image) await removeUpload(old[0].image);
+  res.json(rows[0]);
+}));
+
+router.delete('/admin/articles/:id', wrap(async (req, res) => {
+  const { rows } = await query('DELETE FROM articles WHERE id = $1 RETURNING image', [toInt(req.params.id)]);
+  if (!rows[0]) return res.status(404).json({ error: 'Article introuvable' });
   await removeUpload(rows[0].image);
   res.status(204).end();
 }));

@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pool, query } from './db.js';
 import { migrerFormats } from './variantes.js';
+import { exemplesArticles } from './articles.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SCHEMA = path.resolve(__dirname, '..', 'db', 'schema.sql');
@@ -30,6 +31,7 @@ const DEFAUTS = {
 export async function preparerBase() {
   await query(fs.readFileSync(SCHEMA, 'utf8'));
   await migrerFormats();
+  await exemplesArticles();
   for (const [cle, valeur] of Object.entries(DEFAUTS.parametres)) {
     await query('INSERT INTO parametres (cle, valeur) VALUES ($1, $2) ON CONFLICT (cle) DO NOTHING', [cle, valeur]);
   }

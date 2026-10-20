@@ -6,6 +6,8 @@ import Produit from './pages/Produit.jsx';
 import Recettes from './pages/Recettes.jsx';
 import Recette from './pages/Recette.jsx';
 import Contact from './pages/Contact.jsx';
+import Blog from './pages/Blog.jsx';
+import Article from './pages/Article.jsx';
 import Introuvable from './pages/Introuvable.jsx';
 import Connexion from './admin/Connexion.jsx';
 import AdminLayout from './admin/AdminLayout.jsx';
@@ -16,6 +18,8 @@ import AdminRecetteForm from './admin/AdminRecetteForm.jsx';
 import AdminMessages from './admin/AdminMessages.jsx';
 import AdminCompte from './admin/AdminCompte.jsx';
 import AdminSite from './admin/AdminSite.jsx';
+import AdminArticles from './admin/AdminArticles.jsx';
+import AdminArticleForm from './admin/AdminArticleForm.jsx';
 
 export default function App() {
   return (
@@ -26,6 +30,8 @@ export default function App() {
         <Route path="produits/:slug" element={<Produit />} />
         <Route path="recettes" element={<Recettes />} />
         <Route path="recettes/:slug" element={<Recette />} />
+        <Route path="blog" element={<Blog />} />
+        <Route path="blog/:slug" element={<Article />} />
         <Route path="contact" element={<Contact />} />
         <Route path="*" element={<Introuvable />} />
       </Route>
@@ -40,6 +46,9 @@ export default function App() {
         <Route path="recettes/nouvelle" element={<AdminRecetteForm />} />
         <Route path="recettes/:id" element={<AdminRecetteForm />} />
         <Route path="messages" element={<AdminMessages />} />
+        <Route path="blog" element={<AdminArticles />} />
+        <Route path="blog/nouveau" element={<AdminArticleForm />} />
+        <Route path="blog/:id" element={<AdminArticleForm />} />
         <Route path="site" element={<AdminSite />} />
         <Route path="compte" element={<AdminCompte />} />
       </Route>

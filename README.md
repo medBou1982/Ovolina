@@ -8,7 +8,7 @@ Site vitrine Ovolina avec une interface d'administration simple.
 
 ## Ce que fait le site
 
-**Site public** : Accueil, Produits, fiche produit, Recettes (filtre par catégorie), fiche recette, Contact (le formulaire enregistre les messages en base).
+**Site public** : Accueil, Produits, fiche produit, Recettes (filtre par catégorie), fiche recette, Blog (liste par catégorie, article avec partage), Contact (le formulaire enregistre les messages en base).
 
 **Administration** (`/admin`) :
 - Connexion par email + mot de passe
@@ -16,6 +16,7 @@ Site vitrine Ovolina avec une interface d'administration simple.
 - Conditionnements de chaque produit (boîte de 6, de 12, plateau de 30…) : nombre d'œufs, référence, photo, visibilité
 - Recettes : idem, avec catégorie, ingrédients, étapes et produit utilisé
 - Messages : lecture, « traité / nouveau », réponse par email, suppression
+- Blog : articles avec image, catégorie, résumé, texte mis en forme (intertitres, listes, gras, liens), aperçu, brouillon, publication immédiate ou programmée
 - Infos du site : email, téléphone, réseaux sociaux, adresses des sites, chiffres clés de l'accueil
 - Changement du mot de passe
 
@@ -112,12 +113,14 @@ ovolina/
 | GET | `/api/produits`, `/api/produits/:slug` | public |
 | GET | `/api/recettes?categorie=Plats`, `/api/recettes/:slug` | public |
 | GET | `/api/site` (coordonnées, réseaux, sites, chiffres) | public |
+| GET | `/api/articles?categorie=Conseils`, `/api/articles/:slug` | public |
 | POST | `/api/contact` | public |
 | POST | `/api/auth/login` | public |
 | GET/POST/PUT/DELETE | `/api/admin/produits[/:id]` | admin |
 | GET/POST/PUT/DELETE | `/api/admin/recettes[/:id]` | admin |
 | GET/PATCH/DELETE | `/api/admin/messages[/:id]` | admin |
 | PUT | `/api/admin/site` | admin |
+| GET/POST/PUT/DELETE | `/api/admin/articles[/:id]` | admin |
 | POST | `/api/admin/mot-de-passe` | admin |
 
 Les routes admin attendent l'en-tête `Authorization: Bearer <jeton>` reçu à la connexion (valable 7 jours).

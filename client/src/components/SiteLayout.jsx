@@ -42,6 +42,7 @@ function Entete() {
           <Link to="/#apropos">À propos</Link>
           {lien('/produits', 'Produits')}
           {lien('/recettes', 'Recettes')}
+          {lien('/blog', 'Blog')}
           {lien('/contact', 'Contact')}
         </nav>
       </div>

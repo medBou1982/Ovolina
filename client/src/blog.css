@@ -1,0 +1,76 @@
+/* ===== Blog ===== */
+
+/* Visuel d'article : photo ou motif vert avec l'oiseau Ovolina */
+.visuel-article { position: relative; overflow: hidden; background: var(--vert) center / cover no-repeat; border-radius: 24px 24px 24px 90px; aspect-ratio: 16 / 10; transition: transform .5s cubic-bezier(.2,.7,.2,1), border-radius .5s; }
+.visuel-article .motif-oiseau { position: absolute; right: -18px; bottom: -24px; width: 62%; height: auto; color: #fff; opacity: .14; transform: rotate(-12deg); transition: transform .8s cubic-bezier(.3,1.6,.5,1); }
+.visuel-article:not([style])::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(248, 200, 0, .35) 2px, transparent 2.5px); background-size: 26px 26px; }
+.badge-categorie { position: absolute; top: 16px; left: 16px; background: var(--jaune); color: var(--vert-fonce); font-family: var(--titre); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; padding: 5px 12px; border-radius: 999px; text-decoration: none; }
+.badge-categorie.statique { position: static; display: inline-block; }
+.badge-categorie.statique:hover { background: #FFD633; color: var(--vert-fonce); }
+
+.meta-article { display: inline-flex; flex-wrap: wrap; gap: 8px; color: var(--gris); font-size: 14px; }
+
+/* Cartes */
+.grille-articles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 32px; }
+.article-carte { display: flex; flex-direction: column; gap: 18px; text-decoration: none; color: var(--texte); height: 100%; }
+.article-carte:hover .visuel-article { transform: translateY(-6px) rotate(-.6deg); border-radius: 90px 24px 24px 24px; }
+.article-carte:hover .motif-oiseau { transform: rotate(4deg) scale(1.08); }
+.article-texte { display: flex; flex-direction: column; gap: 8px; }
+.article-texte h3 { font-size: 22px; font-weight: 800; line-height: 1.25; }
+.article-texte p { margin: 0; color: var(--texte); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.article-texte .lire { font-family: var(--titre); font-weight: 700; color: var(--rouge); margin-top: 4px; }
+.article-carte:hover .lire span { display: inline-block; transform: translateX(4px); transition: transform .2s; }
+
+/* Article à la une */
+.article-une { display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; align-items: center; text-decoration: none; color: var(--texte); margin-bottom: 64px; }
+.article-une .visuel-article.grand { aspect-ratio: 4 / 3; border-radius: 32px 32px 32px 160px; }
+.article-une:hover .visuel-article { border-radius: 160px 32px 32px 32px; }
+.article-une-texte { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.article-une-texte h2 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 800; }
+.article-une-texte p { margin: 0; font-size: 17px; }
+@media (max-width: 860px) { .article-une { grid-template-columns: 1fr; gap: 24px; } }
+
+/* Page article */
+.article-page { padding: 64px 0 40px; }
+.article-entete > div { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.article-entete h1 { font-size: clamp(32px, 4.6vw, 52px); font-weight: 800; letter-spacing: -.01em; }
+.article-infos { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.auteur { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; color: var(--vert); }
+.auteur .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--jaune-clair); color: var(--vert); display: inline-flex; align-items: center; justify-content: center; }
+.auteur .avatar svg { width: 30px; height: 30px; }
+.chapo { margin: 8px 0 0; font-size: 20px; line-height: 1.6; color: var(--texte); border-left: 4px solid var(--jaune); padding-left: 18px; }
+.article-image { display: block; width: 100%; max-width: 1000px; max-height: 560px; object-fit: cover; margin: 40px auto 0; border-radius: 32px 32px 32px 140px; }
+.article-corps { max-width: 760px; margin: 48px auto 0; }
+
+/* Texte des articles */
+.contenu-article { font-size: 18px; line-height: 1.85; }
+.contenu-article > * + * { margin-top: 1.1em; }
+.contenu-article p { margin: 0; }
+.contenu-article h2 { font-size: 28px; font-weight: 800; margin-top: 1.8em; position: relative; padding-left: 22px; }
+.contenu-article h2::before { content: ''; position: absolute; left: 0; top: .2em; width: 10px; height: 13px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: var(--jaune); }
+.contenu-article h3 { font-size: 22px; font-weight: 700; margin-top: 1.5em; }
+.contenu-article ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.contenu-article li { position: relative; padding-left: 26px; }
+.contenu-article li::before { content: ''; position: absolute; left: 4px; top: .65em; width: 9px; height: 11px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: var(--rouge); }
+.contenu-article blockquote { margin: 1.6em 0; padding: 20px 28px; background: var(--jaune-clair); border-radius: 20px 20px 20px 4px; font-family: var(--script); font-size: 28px; line-height: 1.3; color: var(--vert-fonce); }
+.contenu-article a { color: var(--vert); font-weight: 600; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: var(--jaune); }
+.contenu-article strong { color: var(--vert-fonce); }
+
+/* Partage */
+.partager { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--bord); }
+.partager > span:first-child { font-family: var(--titre); font-weight: 700; color: var(--vert); margin-right: 6px; }
+.partager a, .partager button { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--bord); background: #fff; color: var(--vert); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s, color .2s, transform .2s, border-color .2s; }
+.partager a:hover, .partager button:hover { background: var(--vert); border-color: var(--vert); color: #fff; transform: translateY(-2px); }
+.partager .copie { color: var(--vert); font-weight: 600; font-size: 14px; }
+
+/* Admin : éditeur d'article */
+.titre-article { font-family: var(--titre); font-size: 22px !important; font-weight: 700; }
+.editeur { display: flex; flex-direction: column; gap: 10px; }
+.editeur-barre { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+.editeur .onglets { background: var(--fond); }
+.outils-texte { display: flex; flex-wrap: wrap; gap: 6px; }
+.outils-texte .btn-petit { min-height: 36px; padding: 6px 12px; font-size: 13px; }
+.zone-article { font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important; font-size: 15px !important; line-height: 1.7; min-height: 380px !important; }
+.apercu-article { border: 1.5px dashed var(--bord); border-radius: 12px; padding: 24px 28px; min-height: 380px; background: #fff; }
+.apercu-article .contenu-article { font-size: 16px; }
+.editeur code { background: var(--fond); padding: 1px 6px; border-radius: 6px; font-size: 12px; }

@@ -3,6 +3,7 @@ import { query } from '../db.js';
 import { wrap } from '../utils.js';
 import { lireSite } from '../infosSite.js';
 import { avecVariantes } from '../variantes.js';
+import { SQL_MINUTES } from '../articles.js';
 
 const router = Router();
 
@@ -68,6 +69,44 @@ router.get('/recettes/:slug', wrap(async (req, res) => {
   );
   if (!rows[0]) return res.status(404).json({ error: 'Recette introuvable' });
   res.json(rows[0]);
+}));
+
+// ---------- Blog ----------
+
+const ARTICLE_LISTE = `id, titre, slug, categorie, extrait, image, auteur, publie_le, ${SQL_MINUTES}`;
+const VISIBLE = 'publie AND publie_le <= NOW()';
+
+// Liste des articles publiés (filtre ?categorie=, ?limit=)
+router.get('/articles', wrap(async (req, res) => {
+  const params = [];
+  let where = VISIBLE;
+  if (req.query.categorie) {
+    params.push(req.query.categorie);
+    where += ` AND categorie = $${params.length}`;
+  }
+  params.push(Math.min(parseInt(req.query.limit, 10) || 60, 100));
+  const { rows } = await query(
+    `SELECT ${ARTICLE_LISTE} FROM articles WHERE ${where} ORDER BY publie_le DESC LIMIT $${params.length}`,
+    params
+  );
+  res.json(rows);
+}));
+
+// Un article + 3 suggestions (même catégorie d'abord)
+router.get('/articles/:slug', wrap(async (req, res) => {
+  const { rows } = await query(
+    `SELECT id, titre, slug, categorie, extrait, contenu, image, auteur, publie_le, ${SQL_MINUTES}
+     FROM articles WHERE slug = $1 AND ${VISIBLE}`,
+    [req.params.slug]
+  );
+  if (!rows[0]) return res.status(404).json({ error: 'Article introuvable' });
+  const a = rows[0];
+  const suite = await query(
+    `SELECT ${ARTICLE_LISTE} FROM articles WHERE ${VISIBLE} AND id <> $1
+     ORDER BY (categorie = $2) DESC, publie_le DESC LIMIT 3`,
+    [a.id, a.categorie]
+  );
+  res.json({ ...a, suggestions: suite.rows });
 }));
 
 // Formulaire de contact

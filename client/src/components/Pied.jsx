@@ -104,6 +104,7 @@ export default function Pied() {
             <Link to="/"><span className="puce" aria-hidden="true" />Accueil</Link>
             <Link to="/#apropos"><span className="puce" aria-hidden="true" />Qui sommes-nous</Link>
             <Link to="/recettes"><span className="puce" aria-hidden="true" />Nos recettes</Link>
+            <Link to="/blog"><span className="puce" aria-hidden="true" />Le blog</Link>
             <Link to="/contact"><span className="puce" aria-hidden="true" />Contact</Link>
           </nav>
 

@@ -6,6 +6,7 @@ import { SiteProvider } from './SiteContext.jsx';
 import './styles.css';
 import './animations.css';
 import './footer.css';
+import './blog.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
