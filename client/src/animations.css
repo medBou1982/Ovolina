@@ -17,7 +17,7 @@ html, body { overflow-x: clip; }
 .heros { overflow: hidden; }
 .heros::before { z-index: 1; }
 .heros > * { z-index: 2; }
-.heros > .heros-fond { position: absolute; inset: 0; z-index: 0; background-color: var(--vert); background-size: cover; background-position: center; animation: kenBurns 24s ease-in-out infinite alternate; }
+.heros > .heros-fond { position: absolute; inset: 0; z-index: 0; background-color: var(--vert); background-size: cover; background-position: center 14%; animation: kenBurns 24s ease-in-out infinite alternate; }
 .heros > .oeufs-flottants { position: absolute; z-index: 1; }
 @keyframes kenBurns { from { transform: scale(1); } to { transform: scale(1.12) translate(-1.5%, -1%); } }
 .heros-contenu > * { animation: monte .9s cubic-bezier(.2,.7,.2,1) both; }

@@ -72,7 +72,7 @@ button, input, select, textarea { font: inherit; }
 
 /* ===== Héros d'accueil ===== */
 .heros { background: var(--vert) center / cover no-repeat; color: #fff; position: relative; }
-.heros::before { content: ''; position: absolute; inset: 0; background: rgba(0, 50, 25, .62); }
+.heros::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 45, 22, .55) 0%, rgba(0, 45, 22, .45) 45%, rgba(0, 45, 22, .7) 100%); }
 .heros > * { position: relative; }
 .heros-contenu { max-width: 960px; margin: 0 auto; padding: 120px 24px 130px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; }
 .heros h1 { color: #fff; font-size: clamp(38px, 6vw, 66px); font-weight: 800; }
