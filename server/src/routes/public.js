@@ -9,7 +9,7 @@ const router = Router();
 
 const PRODUIT_COLS = `id, nom, slug, resume, description, points_forts, nutrition, couleur_jaune, image, ordre`;
 const RECETTE_COLS = `r.id, r.titre, r.slug, r.categorie, r.resume, r.image, r.temps_preparation, r.personnes,
-  r.difficulte, r.ingredients, r.etapes, r.produit_id`;
+  r.difficulte, r.ingredients, r.etapes, r.produit_id, r.video_youtube`;
 
 // Infos générales : coordonnées, réseaux sociaux, sites, chiffres
 router.get('/site', wrap(async (req, res) => {

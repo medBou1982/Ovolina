@@ -110,3 +110,6 @@ CREATE TABLE IF NOT EXISTS articles (
   modifie_le TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS articles_publie_idx ON articles(publie, publie_le DESC);
+
+-- Vidéo YouTube d'une recette : seul l'identifiant de la vidéo est stocké (ex. dQw4w9WgXcQ)
+ALTER TABLE recettes ADD COLUMN IF NOT EXISTS video_youtube TEXT;

@@ -80,6 +80,12 @@ export function RecetteCarte({ recette }) {
         style={recette.image ? { backgroundImage: `url(${recette.image})` } : undefined}
       >
         <span className="badge">{recette.categorie}</span>
+        {recette.video_youtube && (
+          <span className="badge-video" aria-label="Recette en story vidéo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z" /></svg>
+            Story
+          </span>
+        )}
       </div>
       <strong>{recette.titre}</strong>
       <span className="meta">

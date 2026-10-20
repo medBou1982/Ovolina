@@ -5,6 +5,7 @@ import { lignes } from '../api.js';
 import { Revele } from '../components/Decor.jsx';
 import { Banniere, Oeuf, Icone } from '../components/Elements.jsx';
 import Introuvable from './Introuvable.jsx';
+import VideoRecette from '../components/VideoRecette.jsx';
 
 export default function Recette() {
   const { slug } = useParams();
@@ -53,6 +54,9 @@ export default function Recette() {
       <section style={{ paddingBottom: 88 }}>
         <div className="conteneur colonnes-recette">
           <aside>
+            {r.video_youtube && (
+              <Revele sens="zoom"><VideoRecette id={r.video_youtube} titre={r.titre} /></Revele>
+            )}
             {ingredients.length > 0 && (
               <Revele className="ingredients">
                 <h3>Ingrédients</h3>

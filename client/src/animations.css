@@ -192,3 +192,27 @@ html, body { overflow-x: clip; }
 .variante h3 { font-size: 22px; font-weight: 800; }
 .variante-detail { color: var(--gris); font-size: 15px; }
 .variante-ref { margin-top: 6px; font-size: 13px; color: var(--gris); background: var(--fond); border-radius: 999px; padding: 3px 12px; }
+
+/* --- Story vidéo des recettes (format vertical 9:16) --- */
+.story { position: relative; width: 100%; max-width: 340px; margin: 0 auto; aspect-ratio: 9 / 16; border-radius: 30px; overflow: hidden; background: #0d1f14; border: 6px solid #fff; box-shadow: 0 0 0 2px var(--jaune), 0 24px 50px rgba(0, 74, 39, .25); }
+.story iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.story-vignette { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; cursor: pointer; background: none; display: block; }
+.story-vignette img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.02); transition: transform 1.4s cubic-bezier(.2,.7,.2,1); }
+.story-vignette:hover img { transform: scale(1.08); }
+.story-voile { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,30,15,.55) 0%, rgba(0,30,15,0) 22%, rgba(0,30,15,0) 55%, rgba(0,30,15,.85) 100%); }
+.story-barres { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; gap: 4px; }
+.story-barres i { flex: 1; height: 3px; border-radius: 3px; background: rgba(255,255,255,.4); overflow: hidden; position: relative; }
+.story-barres i:first-child::after { content: ''; position: absolute; inset: 0; background: #fff; transform-origin: left; animation: progressionStory 5s linear infinite; }
+@keyframes progressionStory { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.story-auteur { position: absolute; top: 26px; left: 14px; display: flex; align-items: center; gap: 8px; color: #fff; font-family: var(--titre); font-size: 14px; }
+.story-avatar { width: 34px; height: 34px; border-radius: 50%; background: #fff; color: var(--vert); display: inline-flex; align-items: center; justify-content: center; border: 2px solid var(--jaune); }
+.story-avatar svg { width: 24px; height: 24px; }
+.story-lecture { position: absolute; left: 50%; top: 48%; transform: translate(-50%, -50%); filter: drop-shadow(0 10px 22px rgba(0,0,0,.4)); transition: transform .4s cubic-bezier(.3,1.6,.5,1); }
+.story-lecture svg { display: block; animation: battementLecture 2.4s ease-in-out infinite; }
+.story-vignette:hover .story-lecture, .story-vignette:focus-visible .story-lecture { transform: translate(-50%, -50%) scale(1.12) rotate(-6deg); }
+@keyframes battementLecture { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+.story-texte { position: absolute; left: 18px; right: 18px; bottom: 20px; display: flex; flex-direction: column; align-items: flex-start; text-align: left; color: #fff; gap: 2px; }
+.story-texte .script { color: var(--jaune); font-size: 26px; }
+.story-texte strong { font-family: var(--titre); font-weight: 800; font-size: 21px; line-height: 1.2; }
+.colonnes-recette > aside .story { margin-bottom: 8px; }
+.recette-carte .badge-video { position: absolute; left: 16px; bottom: 16px; display: inline-flex; align-items: center; gap: 5px; background: var(--vert-fonce); color: #fff; font-family: var(--titre); font-weight: 700; font-size: 12px; text-transform: uppercase; padding: 5px 12px 5px 10px; border-radius: 999px; }

@@ -5,6 +5,7 @@ import { requireAuth, signToken } from '../auth.js';
 import { upload, uploadPlusieurs, imageUrl } from '../upload.js';
 import { avecVariantes, validerVariantes, enregistrerVariantes } from '../variantes.js';
 import { CATEGORIES_BLOG, SQL_MINUTES } from '../articles.js';
+import { idYoutube } from '../youtube.js';
 import { wrap, uniqueSlug, toBool, toInt, removeUpload } from '../utils.js';
 import { lireSite, validerSite, ecrireSite } from '../infosSite.js';
 
@@ -151,7 +152,10 @@ const CATEGORIES = ['Entrées', 'Plats', 'Desserts'];
 const DIFFICULTES = ['Facile', 'Moyen', 'Difficile'];
 
 function recetteFields(body) {
+  const video = idYoutube(body.video_youtube);
   return {
+    video_youtube: video || null,
+    videoInvalide: video === null,
     titre: String(body.titre || '').trim(),
     categorie: CATEGORIES.includes(body.categorie) ? body.categorie : 'Plats',
     resume: String(body.resume || '').trim(),
@@ -186,13 +190,17 @@ router.post('/admin/recettes', upload.single('image'), wrap(async (req, res) => 
     await removeUpload(imageUrl(req.file));
     return res.status(400).json({ error: 'Le titre est obligatoire' });
   }
+  if (f.videoInvalide) {
+    await removeUpload(imageUrl(req.file));
+    return res.status(400).json({ error: 'Lien YouTube non reconnu : collez l’adresse de la vidéo (youtube.com/watch?v=… ou youtu.be/…)' });
+  }
   const slug = await uniqueSlug(query, 'recettes', req.body.slug || f.titre);
   const { rows } = await query(
     `INSERT INTO recettes (titre, slug, categorie, resume, image, temps_preparation, personnes, difficulte,
-       ingredients, etapes, produit_id, actif, ordre)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING *`,
+       ingredients, etapes, produit_id, actif, ordre, video_youtube)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING *`,
     [f.titre, slug, f.categorie, f.resume, imageUrl(req.file), f.temps_preparation, f.personnes, f.difficulte,
-     f.ingredients, f.etapes, f.produit_id, f.actif, f.ordre]
+     f.ingredients, f.etapes, f.produit_id, f.actif, f.ordre, f.video_youtube]
   );
   res.status(201).json(rows[0]);
 }));
@@ -209,6 +217,10 @@ router.put('/admin/recettes/:id', upload.single('image'), wrap(async (req, res) 
     await removeUpload(imageUrl(req.file));
     return res.status(400).json({ error: 'Le titre est obligatoire' });
   }
+  if (f.videoInvalide) {
+    await removeUpload(imageUrl(req.file));
+    return res.status(400).json({ error: 'Lien YouTube non reconnu : collez l’adresse de la vidéo (youtube.com/watch?v=… ou youtu.be/…)' });
+  }
   const slug = await uniqueSlug(query, 'recettes', req.body.slug || f.titre, id);
   let image = old[0].image;
   if (req.file) image = imageUrl(req.file);
@@ -216,10 +228,10 @@ router.put('/admin/recettes/:id', upload.single('image'), wrap(async (req, res) 
 
   const { rows } = await query(
     `UPDATE recettes SET titre=$1, slug=$2, categorie=$3, resume=$4, image=$5, temps_preparation=$6, personnes=$7,
-       difficulte=$8, ingredients=$9, etapes=$10, produit_id=$11, actif=$12, ordre=$13, modifie_le=NOW()
-     WHERE id=$14 RETURNING *`,
+       difficulte=$8, ingredients=$9, etapes=$10, produit_id=$11, actif=$12, ordre=$13, video_youtube=$14, modifie_le=NOW()
+     WHERE id=$15 RETURNING *`,
     [f.titre, slug, f.categorie, f.resume, image, f.temps_preparation, f.personnes, f.difficulte,
-     f.ingredients, f.etapes, f.produit_id, f.actif, f.ordre, id]
+     f.ingredients, f.etapes, f.produit_id, f.actif, f.ordre, f.video_youtube, id]
   );
   if (image !== old[0].image) await removeUpload(old[0].image);
   res.json(rows[0]);
