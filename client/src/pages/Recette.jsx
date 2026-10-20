@@ -21,6 +21,15 @@ export default function Recette() {
   if (!r) return <p className="vide">Impossible de charger cette recette.</p>;
 
   const ingredients = lignes(r.ingredients);
+  const avecVideo = !!r.video_youtube;
+
+  // Avec une story vidéo, les ingrédients passent sous la préparation pour laisser la story seule à côté
+  const blocIngredients = ingredients.length > 0 && (
+    <Revele className={`ingredients${avecVideo ? ' sous-preparation' : ''}`}>
+      <h3>Ingrédients</h3>
+      <ul>{ingredients.map((i) => <li key={i}>{i}</li>)}</ul>
+    </Revele>
+  );
   const etapes = lignes(r.etapes);
 
   return (
@@ -57,12 +66,7 @@ export default function Recette() {
             {r.video_youtube && (
               <Revele sens="zoom"><VideoRecette id={r.video_youtube} titre={r.titre} /></Revele>
             )}
-            {ingredients.length > 0 && (
-              <Revele className="ingredients">
-                <h3>Ingrédients</h3>
-                <ul>{ingredients.map((i) => <li key={i}>{i}</li>)}</ul>
-              </Revele>
-            )}
+            {!avecVideo && blocIngredients}
             {r.produit && (
               <Link to={`/produits/${r.produit.slug}`} className="produit-utilise">
                 <span className="vignette" style={{ width: 64, height: 64, borderRadius: '50%' }}>
@@ -80,6 +84,7 @@ export default function Recette() {
                 <p>{e}</p>
               </Revele>
             ))}
+            {avecVideo && blocIngredients}
           </div>
         </div>
       </section>
