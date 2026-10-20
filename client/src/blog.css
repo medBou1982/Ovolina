@@ -4,7 +4,7 @@
 .visuel-article { position: relative; overflow: hidden; background: var(--vert) center / cover no-repeat; border-radius: 24px 24px 24px 90px; aspect-ratio: 16 / 10; transition: transform .5s cubic-bezier(.2,.7,.2,1), border-radius .5s; }
 .visuel-article .motif-oiseau { position: absolute; right: -18px; bottom: -24px; width: 62%; height: auto; color: #fff; opacity: .14; transform: rotate(-12deg); transition: transform .8s cubic-bezier(.3,1.6,.5,1); }
 .visuel-article:not([style])::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(248, 200, 0, .35) 2px, transparent 2.5px); background-size: 26px 26px; }
-.badge-categorie { position: absolute; top: 16px; left: 16px; background: var(--jaune); color: var(--vert-fonce); font-family: var(--titre); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; padding: 5px 12px; border-radius: 999px; text-decoration: none; }
+.badge-categorie { position: absolute; top: 16px; right: 16px; background: var(--jaune); color: var(--vert-fonce); font-family: var(--titre); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; padding: 5px 12px; border-radius: 999px; text-decoration: none; }
 .badge-categorie.statique { position: static; display: inline-block; }
 .badge-categorie.statique:hover { background: #FFD633; color: var(--vert-fonce); }
 
