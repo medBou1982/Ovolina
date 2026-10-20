@@ -101,7 +101,7 @@ export default function AdminRecetteForm() {
         <div className="cote">
           <div className="carte-blanche">
             <h2>Photo</h2>
-            <ChampImage actuelle={form.image} repli={<span className="aide">Aucune photo</span>} onChange={(f, supprimer) => setFichier({ image: f, supprimer })} />
+            <ChampImage format="4:3" actuelle={form.image} repli={<span className="aide">Aucune photo</span>} onChange={(f, supprimer) => setFichier({ image: f, supprimer })} />
           </div>
           <div className="carte-blanche">
             <h2>Story vidéo</h2>

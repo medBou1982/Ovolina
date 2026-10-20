@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import Recadrage from './Recadrage.jsx';
 import { Emballage } from '../components/Elements.jsx';
 import Outils from './Outils.jsx';
 
@@ -22,6 +23,7 @@ export function ajouterAuFormulaire(fd, lignes) {
 }
 
 export default function Conditionnements({ lignes, onChange }) {
+  const [aRecadrer, setARecadrer] = useState(null); // { index, source }
   // Libère les aperçus de photos quand on quitte le formulaire
   useEffect(() => () => lignes.forEach((l) => l.apercu && URL.revokeObjectURL(l.apercu)), []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -37,12 +39,18 @@ export default function Conditionnements({ lignes, onChange }) {
     const f = e.target.files?.[0];
     e.target.value = '';
     if (!f) return;
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type) || f.size > 3 * 1024 * 1024) {
-      window.alert('Photo JPG, PNG ou WebP de 3 Mo maximum');
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type) || f.size > 25 * 1024 * 1024) {
+      window.alert('Photo JPG, PNG ou WebP de 25 Mo maximum');
       return;
     }
-    if (lignes[i].apercu) URL.revokeObjectURL(lignes[i].apercu);
-    maj(i, { fichier: f, apercu: URL.createObjectURL(f), supprimer_image: false });
+    setARecadrer({ index: i, source: f });
+  }
+
+  function appliquerRecadrage(fichier) {
+    const i = aRecadrer.index;
+    if (lignes[i]?.apercu) URL.revokeObjectURL(lignes[i].apercu);
+    maj(i, { fichier, apercu: URL.createObjectURL(fichier), supprimer_image: false });
+    setARecadrer(null);
   }
 
   return (
@@ -65,6 +73,7 @@ export default function Conditionnements({ lignes, onChange }) {
                   {photo ? 'Changer' : 'Photo'}
                   <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => choisirPhoto(i, e)} aria-label={`Photo pour ${nom}`} />
                 </label>
+                {photo && <button type="button" className="lien-photo" onClick={() => setARecadrer({ index: i, source: photo })}>Recadrer</button>}
                 {photo && <button type="button" className="lien-photo retirer" onClick={() => maj(i, { fichier: null, apercu: null, supprimer_image: true })}>Retirer</button>}
               </div>
               <label className="champ">Emballage<input type="text" list="libelles-emballage" required value={v.libelle} onChange={(e) => maj(i, { libelle: e.target.value })} /></label>
@@ -78,6 +87,7 @@ export default function Conditionnements({ lignes, onChange }) {
         {lignes.length === 0 && <p className="vide" style={{ padding: 16 }}>Aucun conditionnement pour ce produit.</p>}
       </div>
       {lignes.length < 20 && <button type="button" className="btn btn-contour ajout" onClick={ajouter}>+ Ajouter un conditionnement</button>}
+      {aRecadrer && <Recadrage source={aRecadrer.source} formatInitial="1:1" onValider={appliquerRecadrage} onAnnuler={() => setARecadrer(null)} />}
     </div>
   );
 }

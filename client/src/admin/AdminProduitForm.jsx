@@ -91,6 +91,7 @@ export default function AdminProduitForm() {
           <div className="carte-blanche">
             <h2>Image</h2>
             <ChampImage
+              format="1:1"
               actuelle={form.image}
               repli={<Oeuf jaune={form.couleur_jaune} taille={70} />}
               onChange={(f, supprimer) => setFichier({ image: f, supprimer })}

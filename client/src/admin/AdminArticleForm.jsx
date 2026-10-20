@@ -139,7 +139,7 @@ export default function AdminArticleForm() {
           </div>
           <div className="carte-blanche">
             <h2>Image principale</h2>
-            <ChampImage actuelle={form.image} repli={<span className="aide">Aucune image</span>} onChange={(f, supprimer) => setFichier({ image: f, supprimer })} />
+            <ChampImage format="16:9" actuelle={form.image} repli={<span className="aide">Aucune image</span>} onChange={(f, supprimer) => setFichier({ image: f, supprimer })} />
           </div>
           {!nouveau && <button type="button" className="btn btn-danger" style={{ alignSelf: 'flex-start' }} onClick={supprimer}>Supprimer cet article</button>}
         </div>
