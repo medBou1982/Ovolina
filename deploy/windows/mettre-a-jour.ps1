@@ -29,7 +29,7 @@ Lancer $NPM @('--prefix', "$SITE\client", 'install', '--no-audit', '--no-fund')
 Lancer $NPM @('--prefix', "$SITE\client", 'run', 'build')
 
 Etape 'Mise à jour du serveur (coupure d''environ une minute)'
-Stop-Service ovolina
+Stop-Service ovolina -Force
 try { Lancer $NPM @('--prefix', "$SITE\server", 'install', '--omit=dev', '--no-audit', '--no-fund') }
 finally { Start-Service ovolina }
 

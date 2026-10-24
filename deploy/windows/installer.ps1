@@ -269,7 +269,7 @@ if ($DejaInstalle) {
 # ---------- Dépendances, compilation, base ----------
 Etape 'Installation des dépendances et compilation du site (quelques minutes)'
 $svcSite = Get-Service ovolina -ErrorAction SilentlyContinue
-if ($svcSite -and $svcSite.Status -eq 'Running') { Stop-Service ovolina }
+if ($svcSite -and $svcSite.Status -eq 'Running') { Stop-Service ovolina -Force }
 Lancer $NPM @('--prefix', "$SITE\server", 'install', '--omit=dev', '--no-audit', '--no-fund')
 Lancer $NPM @('--prefix', "$SITE\client", 'install', '--no-audit', '--no-fund')
 Lancer $NPM @('--prefix', "$SITE\client", 'run', 'build')
@@ -340,7 +340,7 @@ if (-not (Test-Path $caddyfile)) {
 } else { Info 'Caddyfile existant conservé.' }
 New-Item -ItemType Directory -Force -Path (Join-Path $CADDY 'donnees') | Out-Null
 InstallerService 'ovolina-caddy' 'Ovolina - serveur web (Caddy)' 'Reçoit les visiteurs et les transmet au site. Gère le HTTPS.' `
-  $caddyExe "run --config `"$caddyfile`" --adapter caddyfile" $CADDY @('ovolina') @{ XDG_DATA_HOME = "$CADDY\donnees"; XDG_CONFIG_HOME = "$CADDY\donnees" }
+  $caddyExe "run --config `"$caddyfile`" --adapter caddyfile" $CADDY @() @{ XDG_DATA_HOME = "$CADDY\donnees"; XDG_CONFIG_HOME = "$CADDY\donnees" }
 if (-not (Attendre 'http://127.0.0.1/api/site')) { Arret "Caddy ne répond pas sur le port 80. Journal : $JOURNAUX\ovolina-caddy-service.err.log" }
 Info 'Caddy répond sur le port 80.'
 
