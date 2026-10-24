@@ -244,11 +244,11 @@ if ($DejaInstalle) {
   $mdpBase = Aleatoire 24
   $role = & $psql -h 127.0.0.1 -U postgres -d postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='ovolina'"
   if ($LASTEXITCODE -ne 0) { Arret 'Connexion à PostgreSQL refusée : vérifiez le mot de passe du compte « postgres ».' }
-  if ($role -match '1') { Lancer $psql @('-h', '127.0.0.1', '-U', 'postgres', '-d', 'postgres', '-qc', "ALTER ROLE ovolina WITH LOGIN PASSWORD '$mdpBase'") }
+  # "$x".Trim() : une réponse vide de psql devient '' (PowerShell compare mal la valeur $null)
+  if ("$role".Trim() -eq '1') { Lancer $psql @('-h', '127.0.0.1', '-U', 'postgres', '-d', 'postgres', '-qc', "ALTER ROLE ovolina WITH LOGIN PASSWORD '$mdpBase'") }
   else { Lancer $psql @('-h', '127.0.0.1', '-U', 'postgres', '-d', 'postgres', '-qc', "CREATE ROLE ovolina WITH LOGIN PASSWORD '$mdpBase'") }
   $base = & $psql -h 127.0.0.1 -U postgres -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='ovolina'"
-  if ($env:GITHUB_ACTIONS) { Write-Host "::notice title=Contrôle base::role=[$role] base=[$base] type=$(if ($null -eq $base) { 'null' } else { $base.GetType().FullName }) code=$LASTEXITCODE" }
-  if ($base -notmatch '1') { Lancer "$PG_BIN\createdb.exe" @('-h', '127.0.0.1', '-U', 'postgres', '-O', 'ovolina', 'ovolina') }
+  if ("$base".Trim() -ne '1') { Lancer "$PG_BIN\createdb.exe" @('-h', '127.0.0.1', '-U', 'postgres', '-O', 'ovolina', 'ovolina') }
   Remove-Item Env:PGPASSWORD
   Info 'Base « ovolina » prête (mot de passe généré automatiquement).'
 
