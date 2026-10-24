@@ -71,6 +71,10 @@ Site : http://localhost:5173 · Administration : http://localhost:5173/admin
 
 ## Mise en production
 
+> **Serveur Windows (OVH, Windows Server 2016/2019/2022)** : suivez le guide pas à pas [deploy/windows/GUIDE.md](deploy/windows/GUIDE.md). L'installation est automatique et se fait en 4 lignes de commande.
+>
+> **Serveur Linux (Ubuntu/Debian)** : `deploy/installer.sh`.
+
 ```bash
 npm run build   # compile le site React dans client/dist
 npm start       # le serveur Node sert l'API ET le site sur le port de .env
