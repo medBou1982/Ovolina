@@ -1,8 +1,6 @@
 # Caddy : reçoit les visiteurs et les transmet au site Ovolina (Node.js, port 4000 en local).
-# __ADRESSES__ est remplacé par « :80 » (accès par l'adresse IP) ou par votre domaine (HTTPS automatique).
-{
-	__OPTIONS__
-}
+# Les adresses sont « :80 » (accès par l'adresse IP) ou votre domaine (HTTPS automatique) : voir lier-domaine.ps1.
+__OPTIONS__
 
 __ADRESSES__ {
 	encode gzip

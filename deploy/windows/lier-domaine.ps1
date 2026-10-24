@@ -31,7 +31,7 @@ if ($Domaine -eq 'ip') {
     }
     if ($d -ne $Domaine -and $dns -and $dns -eq $ip) { $adresses += $d }
   }
-  $options = if ($Email) { "email $Email" } else { '' }
+  $options = if ($Email) { "{`n`temail $Email`n}`n" } else { '' }
   # Quelqu'un qui tape l'adresse IP est renvoyé vers le domaine
   $redirection = ":80 {`n`tredir https://$Domaine{uri} permanent`n}"
   $texte = $modele.Replace('__ADRESSES__', ($adresses -join ', ')).Replace('__OPTIONS__', $options).Replace('__REDIRECTION__', $redirection)

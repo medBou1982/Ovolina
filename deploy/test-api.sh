@@ -23,6 +23,8 @@ egal() { [ "$1" = "$2" ]; }
 
 # Petite image PNG 2×2 pour tester les envois de photos
 printf 'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEklEQVR4nGP4z8DwHwyBDCYGAEvNBvp3zqxJAAAAAElFTkSuQmCC' | base64 -d > "$T/photo.png"
+# Sous Windows (Git Bash), curl a besoin du chemin au format Windows
+PHOTO=$(cygpath -m "$T/photo.png" 2>/dev/null || echo "$T/photo.png")
 
 echo "Attente du serveur…"
 for i in $(seq 1 30); do curl -fs "$URL/api/site" >/dev/null && break; sleep 1; done
@@ -56,8 +58,8 @@ verifier "admin avec jeton : liste des produits" egal "$(code "${A[@]}" "$URL/ap
 verifier "messages : 1 nouveau" egal "$(code "${A[@]}" "$URL/api/admin/messages/nouveaux"; corps | jq .total)" "2001"
 
 echo "Produit avec photo et conditionnements"
-VAR='[{"libelle":"Boîte","quantite":6,"reference":"CI-06","actif":true,"fichier":"img_v_0"},{"libelle":"Plateau","quantite":30,"actif":false}]'
-code "${A[@]}" -F nom="Produit CI" -F resume="Test" -F actif=true -F image=@"$T/photo.png;type=image/png" -F img_v_0=@"$T/photo.png;type=image/png" -F "variantes=$VAR" "$URL/api/admin/produits" > "$T/c"
+VAR='[{"libelle":"Boite","quantite":6,"reference":"CI-06","actif":true,"fichier":"img_v_0"},{"libelle":"Plateau","quantite":30,"actif":false}]'
+code "${A[@]}" -F nom="Produit CI" -F resume="Test" -F actif=true -F "image=@$PHOTO;type=image/png" -F "img_v_0=@$PHOTO;type=image/png" -F "variantes=$VAR" "$URL/api/admin/produits" > "$T/c"
 verifier "création avec photo (201)" egal "$(cat "$T/c")" 201
 ID=$(corps | jq -r .id); IMG=$(corps | jq -r .image); IMGV=$(corps | jq -r '.variantes[0].image')
 verifier "slug généré" egal "$(corps | jq -r .slug)" "produit-ci"
@@ -65,7 +67,7 @@ verifier "2 conditionnements enregistrés" egal "$(corps | jq '.variantes | leng
 verifier "photo du produit servie" egal "$(code "$URL$IMG")" 200
 verifier "photo du conditionnement servie" egal "$(code "$URL$IMGV")" 200
 verifier "conditionnement masqué absent du site public" egal "$(code "$URL/api/produits/produit-ci"; corps | jq '.variantes | length')" "2001"
-verifier "quantité invalide refusée (400)" egal "$(code "${A[@]}" -X PUT -F nom="Produit CI" -F 'variantes=[{"libelle":"Boîte","quantite":0}]' "$URL/api/admin/produits/$ID")" 400
+verifier "quantité invalide refusée (400)" egal "$(code "${A[@]}" -X PUT -F nom="Produit CI" -F 'variantes=[{"libelle":"Boite","quantite":0}]' "$URL/api/admin/produits/$ID")" 400
 verifier "modification sans renvoyer la photo : photo conservée" egal "$(code "${A[@]}" -X PUT -F nom="Produit CI modifié" -F actif=true "$URL/api/admin/produits/$ID"; corps | jq -r .image)" "200$IMG"
 
 echo "Recette avec story vidéo"
@@ -77,7 +79,7 @@ verifier "vidéo visible sur la fiche publique" egal "$(code "$URL/api/recettes/
 echo "Blog"
 verifier "brouillon créé" egal "$(code "${A[@]}" -F titre="Brouillon CI" -F publie=false "$URL/api/admin/articles")" 201
 verifier "brouillon invisible sur le site" egal "$(code "$URL/api/articles/brouillon-ci")" 404
-verifier "article publié visible" egal "$(code "${A[@]}" -F titre="Publié CI" -F publie=true -F "contenu=## Titre\n- point" "$URL/api/admin/articles" >/dev/null; code "$URL/api/articles/publie-ci")" 200
+verifier "article publié visible" egal "$(code "${A[@]}" -F titre="Publie CI" -F publie=true -F "contenu=## Titre\n- point" "$URL/api/admin/articles" >/dev/null; code "$URL/api/articles/publie-ci")" 200
 
 echo "Infos du site"
 SITE=$(curl -s "$URL/api/site" | jq '.chiffres[0].valeur = 25 | .reseaux.facebook = "https://www.facebook.com/ovolina"')
