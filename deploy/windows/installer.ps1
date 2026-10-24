@@ -63,13 +63,25 @@ function Aleatoire($octets) {
   ($b | ForEach-Object { $_.ToString('x2') }) -join ''
 }
 
-# Lance un programme et s'arrête s'il échoue
+# Lance un programme et s'arrête s'il échoue (en montrant ses derniers messages)
 function Lancer($exe, [string[]]$arguments, $dossier = $null) {
   if ($dossier) { Push-Location $dossier }
+  $eap = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
   try {
-    & $exe @arguments
-    if ($LASTEXITCODE -ne 0) { throw "$([IO.Path]::GetFileName($exe)) a échoué (code $LASTEXITCODE)" }
-  } finally { if ($dossier) { Pop-Location } }
+    $sortie = & $exe @arguments 2>&1 | ForEach-Object { $l = "$_"; Write-Host $l; $l }
+    $code = $LASTEXITCODE
+  } finally { $ErrorActionPreference = $eap; if ($dossier) { Pop-Location } }
+  if ($code -ne 0) {
+    $nom = [IO.Path]::GetFileName($exe)
+    if ($env:GITHUB_ACTIONS) { Write-Host "::error title=$nom (code $code)::$((($sortie | Select-Object -Last 15) -join '%0A'))" }
+    throw "$nom a échoué (code $code)"
+  }
+}
+
+# Droits « administrateurs + système uniquement », par identifiants universels (valables sur un Windows en français)
+function Proteger($chemin) {
+  icacls $chemin /inheritance:r /grant:r '*S-1-5-32-544:F' '*S-1-5-18:F' | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw "Impossible de protéger $chemin" }
 }
 
 function Telecharger($url, $nom) {
@@ -209,7 +221,7 @@ if (-not $service) {
   $p = Start-Process $exe -ArgumentList $argsPg -Wait -PassThru
   if ($p.ExitCode -ne 0) { Arret "Installation de PostgreSQL échouée (code $($p.ExitCode))" }
   Ecrire $FICHIER_SUPERUTILISATEUR $superMdp
-  icacls $FICHIER_SUPERUTILISATEUR /inheritance:r /grant:r 'Administrators:F' 'SYSTEM:F' | Out-Null
+  Proteger $FICHIER_SUPERUTILISATEUR
   $MotDePassePostgres = $superMdp
   Info "PostgreSQL installé (mot de passe « postgres » rangé dans $FICHIER_SUPERUTILISATEUR, accès administrateurs uniquement)."
 } else {
@@ -249,7 +261,7 @@ if ($DejaInstalle) {
   ) -join "`n"
   $fichierEnv = Join-Path $SITE 'server\.env'
   Ecrire $fichierEnv "$env_`n"
-  icacls $fichierEnv /inheritance:r /grant:r 'Administrators:F' 'SYSTEM:F' | Out-Null
+  Proteger $fichierEnv
   Info 'server\.env créé (lisible uniquement par les administrateurs et le service du site).'
 }
 
