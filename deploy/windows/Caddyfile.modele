@@ -1,0 +1,20 @@
+# Caddy : reçoit les visiteurs et les transmet au site Ovolina (Node.js, port 4000 en local).
+# __ADRESSES__ est remplacé par « :80 » (accès par l'adresse IP) ou par votre domaine (HTTPS automatique).
+{
+	__OPTIONS__
+}
+
+__ADRESSES__ {
+	encode gzip
+	request_body {
+		max_size 30MB
+	}
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	reverse_proxy 127.0.0.1:4000
+}
+__REDIRECTION__

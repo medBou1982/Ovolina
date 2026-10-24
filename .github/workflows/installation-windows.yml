@@ -1,0 +1,120 @@
+# Test réel du kit d'installation Windows sur un Windows Server neuf fourni par GitHub :
+# installation complète, 43 tests de bout en bout par Caddy (port 80), relance, sauvegarde,
+# mise à jour, mot de passe oublié et liaison d'un domaine en HTTPS.
+name: Installation Windows Server
+
+on:
+  push:
+    paths: ['deploy/windows/**', 'server/**', 'client/**', '.github/workflows/installation-windows.yml']
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ADMIN_EMAIL: admin@ovolina.test
+      ADMIN_PASSWORD: MotDePasseTest1
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntaxe des scripts PowerShell
+        shell: powershell
+        run: |
+          $ko = 0
+          Get-ChildItem deploy\windows\*.ps1 | ForEach-Object {
+            $e = $null; [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$null, [ref]$e) | Out-Null
+            if ($e) { $ko++; $e | ForEach-Object { Write-Host "::error file=deploy/windows/$($_.Extent.File | Split-Path -Leaf),line=$($_.Extent.StartLineNumber)::$($_.Message)" } }
+            else { Write-Host "ok $($_.Name)" }
+          }
+          if ($ko) { exit 1 }
+
+      - name: Installation (comme sur un serveur neuf)
+        shell: powershell
+        run: |
+          Write-Host "Windows : $((Get-CimInstance Win32_OperatingSystem).Caption) - PowerShell $($PSVersionTable.PSVersion)"
+          & .\deploy\windows\installer.ps1 -EmailAdmin $env:ADMIN_EMAIL -MotDePasseAdmin $env:ADMIN_PASSWORD -NonInteractif
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Tests de bout en bout (par Caddy, port 80)
+        shell: bash
+        run: bash deploy/test-api.sh http://127.0.0.1
+
+      - name: Services Windows et pare-feu
+        shell: powershell
+        run: |
+          foreach ($s in 'ovolina', 'ovolina-caddy', 'postgresql-x64-16') {
+            $x = Get-Service $s
+            Write-Host "$s : $($x.Status), démarrage $($x.StartType)"
+            if ($x.Status -ne 'Running' -or "$($x.StartType)" -ne 'Automatic') { Write-Host "::error::Service $s : $($x.Status) / $($x.StartType)"; exit 1 }
+          }
+          if (-not (Get-NetFirewallRule -DisplayName 'Ovolina - Web')) { Write-Host '::error::Règle de pare-feu absente'; exit 1 }
+          if (-not (Get-ScheduledTask -TaskName 'Ovolina - sauvegarde')) { Write-Host '::error::Tâche de sauvegarde absente'; exit 1 }
+          $l = Get-NetTCPConnection -LocalPort 4000 -State Listen
+          if ($l.LocalAddress -ne '127.0.0.1') { Write-Host "::error::Node écoute sur $($l.LocalAddress) au lieu de 127.0.0.1"; exit 1 }
+          Write-Host 'Node écoute uniquement en local : ok'
+
+      - name: Le site redémarre tout seul s'il s'arrête
+        shell: powershell
+        run: |
+          Stop-Process -Name node -Force
+          Start-Sleep -Seconds 15
+          (Invoke-WebRequest http://127.0.0.1/api/site -UseBasicParsing).StatusCode
+
+      - name: Relance de l'installateur (sans rien casser)
+        shell: powershell
+        run: |
+          & .\deploy\windows\installer.ps1 -EmailAdmin $env:ADMIN_EMAIL -NonInteractif
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $r = Invoke-RestMethod -Method Post -Uri http://127.0.0.1/api/auth/login -ContentType 'application/json' -Body (@{ email = $env:ADMIN_EMAIL; motDePasse = $env:ADMIN_PASSWORD } | ConvertTo-Json)
+          if (-not $r.token) { Write-Host '::error::Connexion impossible après relance'; exit 1 }
+          if ((Get-Content C:\Ovolina\site\server\.env -Raw) -match 'ADMIN_PASSWORD=\S') { Write-Host '::error::Mot de passe resté dans .env'; exit 1 }
+          Write-Host 'Données et connexion conservées : ok'
+
+      - name: Sauvegarde
+        shell: powershell
+        run: |
+          & C:\Ovolina\site\deploy\windows\sauvegarde.ps1
+          Get-ChildItem C:\Ovolina\sauvegardes | Format-Table Name, Length
+          $d = Get-ChildItem C:\Ovolina\sauvegardes\base_*.dump | Select-Object -First 1
+          & 'C:\Program Files\PostgreSQL\16\bin\pg_restore.exe' -l $d.FullName | Select-String 'TABLE DATA' | Measure-Object | ForEach-Object { Write-Host "Tables sauvegardées : $($_.Count)"; if ($_.Count -lt 9) { exit 1 } }
+
+      - name: Mise à jour forcée
+        shell: powershell
+        run: |
+          & C:\Ovolina\site\deploy\windows\mettre-a-jour.ps1 -Forcer
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Mot de passe oublié
+        shell: powershell
+        run: |
+          $env:NOUVEL_EMAIL = $env:ADMIN_EMAIL; $env:NOUVEAU_MDP = 'NouveauMotDePasse9'
+          & C:\Ovolina\site\deploy\windows\mot-de-passe.ps1
+          $r = Invoke-RestMethod -Method Post -Uri http://127.0.0.1/api/auth/login -ContentType 'application/json' -Body (@{ email = $env:ADMIN_EMAIL; motDePasse = 'NouveauMotDePasse9' } | ConvertTo-Json)
+          if (-not $r.token) { exit 1 }
+          Write-Host 'Nouveau mot de passe accepté : ok'
+
+      - name: Liaison d'un domaine en HTTPS (localhost, certificat local)
+        shell: powershell
+        run: |
+          & C:\Ovolina\site\deploy\windows\lier-domaine.ps1 -Domaine localhost -SansVerificationDns
+          Start-Sleep -Seconds 10
+          curl.exe -sk -o NUL -w "https://localhost : %{http_code}`n" https://localhost/api/site
+          $code = curl.exe -sk -o NUL -w '%{http_code}' https://localhost/api/site
+          $redir = curl.exe -s -o NUL -w '%{http_code} %{redirect_url}' http://127.0.0.1/produits
+          Write-Host "http://127.0.0.1/produits : $redir"
+          if ($code -ne '200' -or $redir -notmatch '^30[18] https://localhost/produits') { exit 1 }
+          & C:\Ovolina\site\deploy\windows\lier-domaine.ps1 -Domaine ip
+          Start-Sleep -Seconds 5
+          (Invoke-WebRequest http://127.0.0.1/api/site -UseBasicParsing).StatusCode
+
+      - name: Journaux en cas d'échec
+        if: failure()
+        shell: powershell
+        run: |
+          Get-ChildItem C:\Ovolina\journaux\*.log -ErrorAction SilentlyContinue | ForEach-Object {
+            $t = (Get-Content $_.FullName -Tail 25) -join '%0A'
+            Write-Host "::error title=$($_.Name)::$t"
+          }

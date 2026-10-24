@@ -11,7 +11,11 @@ ok=0; ko=0
 
 verifier() { # verifier "description" condition...
   local nom=$1; shift
-  if "$@" >/dev/null 2>&1; then ok=$((ok + 1)); echo "  ✔ $nom"; else ko=$((ko + 1)); echo "  ✖ $nom"; fi
+  if "$@" >/dev/null 2>&1; then ok=$((ok + 1)); echo "  ✔ $nom"; else
+    ko=$((ko + 1)); echo "  ✖ $nom"
+    # Sur GitHub, chaque échec apparaît aussi comme une alerte lisible sans ouvrir le journal
+    [ -n "${GITHUB_ACTIONS:-}" ] && echo "::error title=Test échoué::$nom (réponse : $(head -c 300 "$T/corps" 2>/dev/null | tr '\n' ' '))"
+  fi
 }
 code() { curl -s -o "$T/corps" -w '%{http_code}' "$@"; }
 corps() { cat "$T/corps"; }
@@ -94,5 +98,6 @@ verifier "index.html jamais en cache" bash -c "curl -sI '$URL/' | grep -qi 'no-c
 
 echo
 echo "Résultat : $ok réussis, $ko échoués"
+[ -n "${GITHUB_ACTIONS:-}" ] && echo "::notice title=Tests de bout en bout::$ok réussis, $ko échoués"
 rm -rf "$T"
 [ "$ko" -eq 0 ]

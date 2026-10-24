@@ -1,0 +1,4 @@
+# Scripts Windows : gardés tels quels (UTF-8 avec BOM, fins de ligne Windows) pour PowerShell 5.1
+deploy/windows/* -text
+# Scripts Linux : toujours en fins de ligne Unix, même récupérés depuis Windows
+*.sh text eol=lf
