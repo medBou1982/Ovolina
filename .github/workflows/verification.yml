@@ -1,0 +1,66 @@
+# Vérification automatique : à chaque envoi sur GitHub, on installe le site comme en production,
+# avec une vraie base PostgreSQL, puis on teste l'API et les pages de bout en bout.
+name: Vérification
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verifier:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ovolina
+          POSTGRES_PASSWORD: test123
+          POSTGRES_DB: ovolina
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://ovolina:test123@localhost:5432/ovolina
+      JWT_SECRET: secret-de-test-pour-la-verification-automatique
+      PORT: 4000
+      HOST: 127.0.0.1
+      ADMIN_EMAIL: admin@ovolina.test
+      ADMIN_PASSWORD: MotDePasseTest1
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Dépendances du serveur
+        run: npm --prefix server install --omit=dev --no-audit --no-fund
+
+      - name: Dépendances du site
+        run: npm --prefix client install --no-audit --no-fund
+
+      - name: Compilation du site
+        run: npm --prefix client run build
+
+      - name: Création de la base (deux fois, pour vérifier qu'on peut relancer sans risque)
+        run: |
+          npm --prefix server run db:init
+          npm --prefix server run db:init
+
+      - name: Démarrage du serveur et tests de bout en bout
+        run: |
+          cd server && nohup node src/index.js > ../serveur.log 2>&1 &
+          bash deploy/test-api.sh
+
+      - name: Journal du serveur
+        if: always()
+        run: cat serveur.log || true
+
+      - name: Scripts de déploiement (syntaxe)
+        run: |
+          for f in deploy/*.sh; do bash -n "$f" && echo "ok $f"; done

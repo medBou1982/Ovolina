@@ -1,0 +1,24 @@
+# Service systemd : démarre le site Ovolina au démarrage du serveur et le relance s'il s'arrête
+[Unit]
+Description=Site Ovolina (Node.js)
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=ovolina
+Group=ovolina
+WorkingDirectory=/var/www/ovolina/server
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node src/index.js
+Restart=always
+RestartSec=3
+
+# Durcissement : le service ne peut écrire que dans ses propres dossiers
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
