@@ -57,6 +57,14 @@ jobs:
           cd server && nohup node src/index.js > ../serveur.log 2>&1 &
           bash deploy/test-api.sh
 
+      - name: Outil de mot de passe administrateur
+        run: |
+          NOUVEL_EMAIL=second@ovolina.test NOUVEAU_MDP=SecondCompte42 npm --prefix server run admin:mdp
+          NOUVEL_EMAIL=second@ovolina.test NOUVEAU_MDP=ChangeEnSuite42 npm --prefix server run admin:mdp
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json' \
+            -d '{"email":"second@ovolina.test","motDePasse":"ChangeEnSuite42"}' http://127.0.0.1:4000/api/auth/login)
+          echo "Connexion avec le nouveau mot de passe : $code"; [ "$code" = 200 ]
+
       - name: Journal du serveur
         if: always()
         run: cat serveur.log || true

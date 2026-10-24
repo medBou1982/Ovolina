@@ -210,6 +210,8 @@ fi
 etape "Sauvegardes automatiques et commande de mise à jour"
 install -m 755 "$APP/deploy/sauvegarde.sh" /usr/local/bin/ovolina-sauvegarde
 install -m 755 "$APP/deploy/mettre-a-jour.sh" /usr/local/bin/ovolina-maj
+printf '#!/bin/sh\n# Crée un compte admin ou change son mot de passe\ncd %s/server && exec sudo -u %s -H node db/mot-de-passe.js\n' "$APP" "$UTILISATEUR" > /usr/local/bin/ovolina-admin
+chmod 755 /usr/local/bin/ovolina-admin
 echo "15 3 * * * root /usr/local/bin/ovolina-sauvegarde >> /var/log/ovolina-sauvegarde.log 2>&1" > /etc/cron.d/ovolina-sauvegarde
 chmod 644 /etc/cron.d/ovolina-sauvegarde
 /usr/local/bin/ovolina-sauvegarde >/dev/null && info "Première sauvegarde faite dans /var/backups/ovolina (puis chaque nuit à 3 h 15)."
@@ -223,6 +225,7 @@ echo "  Site            : $ADRESSE"
 echo "  Administration  : $ADRESSE/admin   ($EMAIL_ADMIN)"
 echo
 echo "  Mettre à jour   : sudo ovolina-maj"
+echo "  Mot de passe    : sudo ovolina-admin   (oubli, ou nouveau compte)"
 echo "  Voir les logs   : sudo journalctl -u ovolina -f"
 echo "  Redémarrer      : sudo systemctl restart ovolina"
 echo "  Sauvegardes     : /var/backups/ovolina"
