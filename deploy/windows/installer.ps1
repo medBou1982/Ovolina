@@ -39,10 +39,20 @@ $PG_DOSSIER = "C:\Program Files\PostgreSQL\$PG_VERSION"
 $PG_BIN = "$PG_DOSSIER\bin"
 $FICHIER_SUPERUTILISATEUR = Join-Path $OUTILS 'postgres-superutilisateur.txt'
 
-function Etape($t) { Write-Host ''; Write-Host "> $t" -ForegroundColor Green }
+function Etape($t) { Write-Host ''; Write-Host "> $t" -ForegroundColor Green; if ($env:GITHUB_ACTIONS) { Write-Host "::notice title=Étape::$t" } }
 function Info($t) { Write-Host "  $t" }
 function Alerte($t) { Write-Host "  ! $t" -ForegroundColor Yellow }
-function Arret($t) { Write-Host ''; Write-Host "X $t" -ForegroundColor Red; exit 1 }
+function Arret($t) {
+  Write-Host ''; Write-Host "X $t" -ForegroundColor Red
+  if ($env:GITHUB_ACTIONS) { Write-Host "::error title=Installateur::$t" }
+  exit 1
+}
+# Toute erreur imprévue est affichée clairement, avec sa ligne
+trap {
+  Write-Host ''; Write-Host "X Erreur : $($_.Exception.Message) (ligne $($_.InvocationInfo.ScriptLineNumber))" -ForegroundColor Red
+  if ($env:GITHUB_ACTIONS) { Write-Host "::error title=Installateur (ligne $($_.InvocationInfo.ScriptLineNumber))::$($_.Exception.Message)" }
+  exit 1
+}
 
 # Écrit un fichier texte en UTF-8 SANS BOM (indispensable pour .env et Caddyfile)
 function Ecrire($chemin, $texte) { [IO.File]::WriteAllText($chemin, $texte, (New-Object Text.UTF8Encoding $false)) }
