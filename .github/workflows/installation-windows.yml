@@ -114,6 +114,17 @@ jobs:
         if: failure()
         shell: powershell
         run: |
+          $ErrorActionPreference = 'Continue'
+          $diag = @()
+          $diag += 'Services : ' + ((Get-Service postgresql* | ForEach-Object { "$($_.Name)=$($_.Status)" }) -join ', ')
+          $diag += 'Port 5432 : ' + ((Get-NetTCPConnection -LocalPort 5432 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { "$($_.LocalAddress) pid $($_.OwningProcess) $((Get-Process -Id $_.OwningProcess).Path)" }) -join ' | ')
+          $diag += 'Variables PG : ' + ((Get-ChildItem env:PG*, env:DATABASE* | ForEach-Object { "$($_.Name)=$($_.Value)" }) -join ' ; ')
+          if (Test-Path C:\Ovolina\outils\postgres-superutilisateur.txt) {
+            $env:PGPASSWORD = (Get-Content C:\Ovolina\outils\postgres-superutilisateur.txt -Raw).Trim()
+            $diag += 'Bases (16) : ' + ((& 'C:\Program Files\PostgreSQL\16\bin\psql.exe' -h 127.0.0.1 -U postgres -d postgres -tAc 'SELECT current_setting(''port'') || '' '' || string_agg(datname, '','') FROM pg_database GROUP BY 1' 2>&1) -join ' ')
+          }
+          if (Test-Path C:\Ovolina\site\server\.env) { $diag += '.env : ' + ((Get-Content C:\Ovolina\site\server\.env) -replace ':[0-9a-f]{20,}@', ':***@' -replace 'SECRET=.*', 'SECRET=***' -join ' ; ') }
+          Write-Host "::error title=Diagnostic::$($diag -join '%0A')"
           Get-ChildItem C:\Ovolina\journaux\*.log -ErrorAction SilentlyContinue | ForEach-Object {
             $t = (Get-Content $_.FullName -Tail 25) -join '%0A'
             Write-Host "::error title=$($_.Name)::$t"
