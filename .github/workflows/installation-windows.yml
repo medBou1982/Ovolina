@@ -35,7 +35,7 @@ jobs:
         shell: powershell
         run: |
           Write-Host "Windows : $((Get-CimInstance Win32_OperatingSystem).Caption) - PowerShell $($PSVersionTable.PSVersion)"
-          & .\deploy\windows\installer.ps1 -EmailAdmin $env:ADMIN_EMAIL -MotDePasseAdmin $env:ADMIN_PASSWORD -NonInteractif
+          & .\deploy\windows\installer.ps1 -EmailAdmin $env:ADMIN_EMAIL -MotDePasseAdmin $env:ADMIN_PASSWORD -NonInteractif -ArreterIIS
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Tests de bout en bout (par Caddy, port 80)
