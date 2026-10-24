@@ -35,8 +35,11 @@ jobs:
         shell: powershell
         run: |
           Write-Host "Windows : $((Get-CimInstance Win32_OperatingSystem).Caption) - PowerShell $($PSVersionTable.PSVersion)"
+          Start-Transcript C:\installation.txt | Out-Null
           & .\deploy\windows\installer.ps1 -EmailAdmin $env:ADMIN_EMAIL -MotDePasseAdmin $env:ADMIN_PASSWORD -NonInteractif -ArreterIIS
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $code = $LASTEXITCODE
+          Stop-Transcript | Out-Null
+          if ($code -ne 0) { exit $code }
 
       - name: Tests de bout en bout (par Caddy, port 80)
         shell: bash
@@ -121,9 +124,14 @@ jobs:
           $diag += 'Variables PG : ' + ((Get-ChildItem env:PG*, env:DATABASE* | ForEach-Object { "$($_.Name)=$($_.Value)" }) -join ' ; ')
           if (Test-Path C:\Ovolina\outils\postgres-superutilisateur.txt) {
             $env:PGPASSWORD = (Get-Content C:\Ovolina\outils\postgres-superutilisateur.txt -Raw).Trim()
-            $diag += 'Bases (16) : ' + ((& 'C:\Program Files\PostgreSQL\16\bin\psql.exe' -h 127.0.0.1 -U postgres -d postgres -tAc 'SELECT current_setting(''port'') || '' '' || string_agg(datname, '','') FROM pg_database GROUP BY 1' 2>&1) -join ' ')
+            $diag += 'Bases (16) : ' + ((& 'C:\Program Files\PostgreSQL\16\bin\psql.exe' -h 127.0.0.1 -U postgres -d postgres -tAc 'SELECT string_agg(datname, '','') FROM pg_database' 2>&1) -join ' ')
+            $diag += 'Rôles (16) : ' + ((& 'C:\Program Files\PostgreSQL\16\bin\psql.exe' -h 127.0.0.1 -U postgres -d postgres -tAc 'SELECT string_agg(rolname, '','') FROM pg_roles WHERE rolname NOT LIKE ''pg_%''' 2>&1) -join ' ')
           }
-          if (Test-Path C:\Ovolina\site\server\.env) { $diag += '.env : ' + ((Get-Content C:\Ovolina\site\server\.env) -replace ':[0-9a-f]{20,}@', ':***@' -replace 'SECRET=.*', 'SECRET=***' -join ' ; ') }
+          if (Test-Path C:\Ovolina\site\server\.env) { $diag += '.env : ' + ((Get-Content C:\Ovolina\site\server\.env) -replace '(?<=://[^:]*:)[^@]*', '(masqué)' -replace 'SECRET=.*', 'SECRET=(masqué)' -join ' ; ') }
+          if (Test-Path C:\installation.txt) {
+            $t = (Get-Content C:\installation.txt | Where-Object { $_ -notmatch '^\*{10}|^(Début|Fin|Heure|Nom|Utilisateur|Ordinateur|Application|ID|Version|Windows PowerShell|PSVersion|PSEdition|PSCompat|Build|CLR|WSMan|Serialization|Process|Host|Start|End|Username|RunAs|Configuration|Machine)' } | Select-Object -Last 70) -join '%0A'
+            Write-Host "::error title=Déroulé de l'installation::$t"
+          }
           Write-Host "::error title=Diagnostic::$($diag -join '%0A')"
           Get-ChildItem C:\Ovolina\journaux\*.log -ErrorAction SilentlyContinue | ForEach-Object {
             $t = (Get-Content $_.FullName -Tail 25) -join '%0A'
